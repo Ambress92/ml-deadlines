@@ -208,10 +208,10 @@
     const webcal = https.replace(/^https?:/, "webcal:");
     const menu = document.getElementById("menu");
     menu.innerHTML = `<div class="mh">${id === "all" ? "All venues" : esc(v.name)}</div>
-      <a href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener">Google Calendar</a>
-      <a href="${esc(webcal)}">Apple Calendar or Outlook</a>
-      <a href="${esc(https)}" download>Download .ics file</a>
-      <button data-copy="${esc(https)}">Copy calendar link</button>
+      <a href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener" data-track="${esc(id)}/google">Google Calendar</a>
+      <a href="${esc(webcal)}" data-track="${esc(id)}/webcal">Apple Calendar or Outlook</a>
+      <a href="${esc(https)}" download data-track="${esc(id)}/download">Download .ics file</a>
+      <button data-copy="${esc(https)}" data-track="${esc(id)}/copy">Copy calendar link</button>
       <div class="note">Subscribing keeps your calendar in sync when dates change.</div>`;
     menu.hidden = false;
     const r = btn.getBoundingClientRect(), w = menu.offsetWidth, h = menu.offsetHeight;
@@ -254,11 +254,17 @@
   const gen = new Date(DATA.generated);
   document.getElementById("footer").innerHTML =
     `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from CORE 2023.</span>
+     <span>Visits are counted anonymously with <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a>: no cookies, no personal data stored.</span>
      <a href="${esc(DATA.repo)}/issues/new?template=update-dates.yml" target="_blank" rel="noopener">Report a wrong date</a>
      <a href="${esc(DATA.repo)}/issues/new?template=add-conference.yml" target="_blank" rel="noopener">Suggest a conference</a>
      <a href="${esc(DATA.repo)}" target="_blank" rel="noopener">Source on GitHub</a>`;
 
   document.addEventListener("click", e => {
+    // calendar subscriptions are counted as GoatCounter events, e.g. "calendar/iclr/google"
+    const tracked = e.target.closest("[data-track]");
+    if (tracked && window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({path: `calendar/${tracked.dataset.track}`, title: "Calendar subscription", event: true});
+    }
     const copy = e.target.closest("[data-copy]");
     if (copy) {
       navigator.clipboard?.writeText(copy.dataset.copy).then(() => toast("Calendar link copied"), () => toast(copy.dataset.copy));
