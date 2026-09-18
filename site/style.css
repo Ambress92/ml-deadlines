@@ -79,7 +79,7 @@ button:focus-visible,.chip:focus-visible,[tabindex]:focus-visible,input:focus-vi
 .grid{position:absolute; top:0; bottom:0; left:var(--namew); right:0; pointer-events:none; z-index:0}
 .grid i{position:absolute; top:0; bottom:0; width:1px; background:var(--line)}
 .grid .now{width:2px; background:var(--today); z-index:3}
-.grid .now::before{content:"today"; position:absolute; top:-1px; left:4px; font:600 10px var(--mono); color:var(--today); background:var(--surface); padding:0 3px}
+.grid .now::before{content:"today"; position:absolute; top:-1px; left:50%; transform:translateX(-50%); font:600 10px var(--mono); color:var(--today); background:var(--surface); padding:0 3px}
 .trow{border-bottom:1px solid var(--line); min-height:54px}
 .trow:last-child{border-bottom:0}
 .tname{padding:8px 12px 8px 14px; display:flex; flex-direction:column; justify-content:center; gap:2px; border-right:1px solid var(--line); background:var(--surface); position:sticky; left:0; z-index:4}
@@ -96,7 +96,8 @@ button:focus-visible,.chip:focus-visible,[tabindex]:focus-visible,input:focus-vi
 .band.review{background:var(--review)}
 .band.rebuttal{background:var(--rebuttal); height:6px; margin-top:-3px; z-index:1}
 .band.conf{background:var(--conf); height:14px; margin-top:-7px; min-width:6px; z-index:1}
-.mk{position:absolute; top:50%; z-index:2; cursor:default}
+.mk{position:absolute; top:50%; z-index:2; cursor:default; box-shadow:0 0 0 2px var(--surface)}
+.mk.notif{box-shadow:none}
 .mk.sub{width:11px; height:11px; margin:-5.5px 0 0 -5.5px; transform:rotate(45deg); background:var(--accent)}
 .mk.sub.hollow{background:var(--surface); border:2px solid var(--accent)}
 .mk.notif{width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--notif); border:2px solid var(--surface)}

@@ -75,21 +75,28 @@
 
   function renderTimeline(list, now) {
     const today = new Date(now); today.setHours(0, 0, 0, 0);
-    const START = today.getTime();
+    // two weeks of lead-in keep today's deadlines off the chart edge; the axis still runs 12 months ahead
+    const START = today.getTime() - 14 * DAY;
     const END = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).getTime();
     const pct = ms => ((ms - START) / (END - START)) * 100;
     const clamp = x => Math.max(0, Math.min(100, x));
 
     let head = "", grid = "";
-    for (let m = 1; m <= 12; m++) {
+    const nowX = pct(now);
+    let firstLabel = true;
+    for (let m = 0; m <= 12; m++) {
       const d = new Date(today.getFullYear(), today.getMonth() + m, 1);
+      if (d.getTime() <= START) continue;
       if (d.getTime() >= END) break;
       const x = pct(d.getTime()), jan = d.getMonth() === 0;
-      const lbl = d.toLocaleString(undefined, {month: "short"}) + (jan || m === 1 ? " " + d.getFullYear() : "");
-      if (x > 3) head += `<div class="mo${jan ? " jan" : ""}" style="left:${x}%">${lbl}</div>`;
+      const lbl = d.toLocaleString(undefined, {month: "short"}) + (jan || firstLabel ? " " + d.getFullYear() : "");
+      if (Math.abs(x - nowX) > 2) {
+        head += `<div class="mo${jan ? " jan" : ""}" style="left:${x}%">${lbl}</div>`;
+        firstLabel = false;
+      }
       grid += `<i style="left:${x}%"></i>`;
     }
-    grid += `<i class="now" style="left:0"></i>`;
+    grid += `<i class="now" style="left:${nowX}%"></i>`;
 
     const body = list.map(r => {
       const {v, events, next, ed} = r;
