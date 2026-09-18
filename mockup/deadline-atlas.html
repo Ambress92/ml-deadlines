@@ -1,0 +1,448 @@
+<title>Deadline Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --surface-2:#EAEEF2; --ink:#12161D; --muted:#5A6474; --faint:#8A93A1; --line:#DCE1E7;
+  --accent:#0E7C86; --accent-ink:#FFFFFF; --accent-soft:#D6EEF0;
+  --review:#CBD4DE; --rebuttal:#E3A23B; --notif:#3D8A4C; --camera:#6C7A8F; --conf:#12161D;
+  --urgent:#C63D2F; --soon:#A86B12; --today:#C63D2F;
+  --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --sans:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --namew:220px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1216; --surface:#151A20; --surface-2:#1C232B; --ink:#E5E9EE; --muted:#9AA4B1; --faint:#6B7582; --line:#29313A;
+    --accent:#3DB5BF; --accent-ink:#06282B; --accent-soft:#12383C;
+    --review:#34404D; --rebuttal:#E0A43F; --notif:#5DB36D; --camera:#8E9BB0; --conf:#E5E9EE;
+    --urgent:#EE6A5B; --soon:#E0A43F; --today:#EE6A5B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1216; --surface:#151A20; --surface-2:#1C232B; --ink:#E5E9EE; --muted:#9AA4B1; --faint:#6B7582; --line:#29313A;
+  --accent:#3DB5BF; --accent-ink:#06282B; --accent-soft:#12383C;
+  --review:#34404D; --rebuttal:#E0A43F; --notif:#5DB36D; --camera:#8E9BB0; --conf:#E5E9EE;
+  --urgent:#EE6A5B; --soon:#E0A43F; --today:#EE6A5B;
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:14px; line-height:1.45}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 20px 64px; display:flex; flex-direction:column; gap:22px}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 24px}
+h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-.02em; margin:0; line-height:1.1}
+.sub{color:var(--muted); margin:4px 0 0; max-width:62ch}
+.tz{font-family:var(--mono); font-size:12px; color:var(--muted); text-align:right}
+.tz b{color:var(--ink); font-weight:500}
+.notice{font-size:13px; color:var(--muted); background:var(--surface-2); border-radius:6px; padding:8px 12px}
+.notice strong{color:var(--ink); font-weight:600}
+
+.controls{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center}
+.seg{display:inline-flex; background:var(--surface-2); border-radius:8px; padding:3px}
+.seg button{font:600 13px var(--sans); color:var(--muted); background:none; border:0; padding:7px 14px; border-radius:6px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font:500 12.5px var(--sans); color:var(--muted); background:transparent; border:1px solid var(--line); padding:5px 11px; border-radius:999px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.check{display:inline-flex; gap:7px; align-items:center; color:var(--muted); font-size:13px; cursor:pointer}
+.check input{accent-color:var(--accent)}
+button:focus-visible,.chip:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* rolling strip */
+.rolling{display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; border:1px dashed var(--line); border-radius:8px; padding:10px 14px; background:var(--surface)}
+.rolling .lbl{font:600 11px var(--sans); text-transform:uppercase; letter-spacing:.08em; color:var(--muted)}
+.rolling .ven{font-family:var(--display); font-weight:700; font-size:15px}
+.rolling .ven a{color:inherit; text-decoration:none; border-bottom:1px solid var(--line)}
+.rolling .ven a:hover{color:var(--accent); border-bottom-color:var(--accent)}
+.rolling .ven small{font:500 12px var(--sans); color:var(--muted); margin-left:6px}
+.rolling .next{font-family:var(--mono); font-size:12.5px}
+.rolling .next b{font-weight:600}
+.rolling .then{font-family:var(--mono); font-size:12px; color:var(--faint)}
+
+/* legend */
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.sw{display:inline-block}
+.sw.dia{width:9px; height:9px; transform:rotate(45deg); background:var(--accent)}
+.sw.dia.hollow{background:var(--surface); border:2px solid var(--accent)}
+.sw.bar{width:18px; height:8px; border-radius:2px}
+.sw.dot{width:12px; height:12px; border-radius:50%; background:var(--notif)}
+.sw.sq{width:7px; height:7px; background:var(--camera)}
+
+/* timeline */
+.tl-scroll{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:10px}
+.tl{position:relative; min-width:880px}
+.tl-head,.trow{display:grid; grid-template-columns:var(--namew) 1fr}
+.tl-head{height:34px; border-bottom:1px solid var(--line)}
+.tl-head .axis{position:relative}
+.mo{position:absolute; top:10px; font:500 11px var(--mono); color:var(--muted); padding-left:5px; white-space:nowrap}
+.mo.jan{color:var(--ink); font-weight:600}
+.grid{position:absolute; top:0; bottom:0; left:var(--namew); right:0; pointer-events:none; z-index:0}
+.grid i{position:absolute; top:0; bottom:0; width:1px; background:var(--line)}
+.grid .now{width:2px; background:var(--today); z-index:3}
+.grid .now::before{content:"today"; position:absolute; top:-1px; left:4px; font:600 10px var(--mono); color:var(--today); background:var(--surface); padding:0 3px}
+.trow{border-bottom:1px solid var(--line); min-height:54px}
+.trow:last-child{border-bottom:0}
+.tname{padding:8px 12px 8px 14px; display:flex; flex-direction:column; justify-content:center; gap:2px; border-right:1px solid var(--line); background:var(--surface); position:sticky; left:0; z-index:4}
+.vn{font-family:var(--display); font-weight:700; font-size:15px; display:flex; align-items:baseline; gap:6px}
+.vn a{color:inherit; text-decoration:none; border-bottom:1px solid var(--line)}
+.vn a:hover{color:var(--accent); border-bottom-color:var(--accent)}
+.vn .ed{font:500 12px var(--mono); color:var(--muted)}
+.rank{font:600 10.5px var(--mono); padding:1px 5px; border-radius:4px; background:var(--surface-2); color:var(--muted)}
+.cd{font:500 12px var(--mono); color:var(--muted); white-space:nowrap}
+.cd.urgent{color:var(--urgent)} .cd.soon{color:var(--soon)}
+.est-tag{font:600 10px var(--mono); text-transform:uppercase; letter-spacing:.06em; color:var(--faint); border:1px dashed var(--faint); border-radius:4px; padding:0 4px}
+.track{position:relative; z-index:1}
+.band{position:absolute; top:50%; height:10px; margin-top:-5px; border-radius:2px}
+.band.review{background:var(--review)}
+.band.rebuttal{background:var(--rebuttal); height:6px; margin-top:-3px; z-index:1}
+.band.conf{background:var(--conf); height:14px; margin-top:-7px; min-width:6px; z-index:1}
+.mk{position:absolute; top:50%; z-index:2; cursor:default}
+.mk.sub{width:11px; height:11px; margin:-5.5px 0 0 -5.5px; transform:rotate(45deg); background:var(--accent)}
+.mk.sub.hollow{background:var(--surface); border:2px solid var(--accent)}
+.mk.notif{width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--notif); border:2px solid var(--surface)}
+.mk.camera{width:8px; height:8px; margin:-4px 0 0 -4px; background:var(--camera)}
+.band[data-tip]{cursor:default}
+.clabel{position:absolute; top:50%; transform:translateY(-50%); font:500 11px var(--mono); color:var(--muted); white-space:nowrap}
+.past{opacity:.3}
+.trow.est .track > *:not(.past){opacity:.55}
+.trow.est .band.conf,.trow.est .band.review{background:transparent; border:1.5px dashed var(--faint)}
+.trow.est .mk.sub{background:transparent; border:2px dashed var(--accent)}
+
+/* list */
+.list{display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line); border-radius:10px}
+.lrow{display:grid; grid-template-columns:118px minmax(170px,1.1fr) minmax(220px,1.5fr) minmax(250px,2fr) auto; gap:14px 20px; align-items:center; padding:14px 16px; border-bottom:1px solid var(--line)}
+.lrow:last-child{border-bottom:0}
+.lrow.est{background:repeating-linear-gradient(135deg, transparent 0 10px, var(--surface-2) 10px 11px)}
+.big{font:600 20px var(--mono); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.big.urgent{color:var(--urgent)} .big.soon{color:var(--soon)}
+.big small{display:block; font:500 11px var(--sans); color:var(--muted); letter-spacing:0}
+.meta{font-size:12.5px; color:var(--muted)}
+.nextdl b{font-weight:600}
+.nextdl .when{font-family:var(--mono); font-size:13px}
+.nextdl .aoe{font:400 11.5px var(--mono); color:var(--faint)}
+.phases{display:flex; flex-wrap:wrap; gap:4px 6px}
+.ph{font:500 11.5px var(--mono); padding:2px 7px; border-radius:4px; background:var(--surface-2); color:var(--muted); white-space:nowrap}
+.ph.is-next{background:var(--accent-soft); color:var(--ink); font-weight:600}
+.ph.done{text-decoration:line-through; opacity:.6}
+.btn{font:600 12.5px var(--sans); color:var(--accent-ink); background:var(--accent); border:0; border-radius:6px; padding:8px 12px; cursor:pointer; white-space:nowrap}
+.btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent)}
+
+#tip{position:fixed; z-index:50; pointer-events:none; background:var(--ink); color:var(--bg); font:500 12px var(--mono); padding:6px 9px; border-radius:6px; max-width:280px; white-space:pre-line}
+#toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; z-index:60; max-width:calc(100% - 32px)}
+
+@media (max-width:860px){
+  .lrow{grid-template-columns:96px 1fr; gap:8px 14px}
+  .lrow .nextdl,.lrow .phases,.lrow .act{grid-column:2}
+  .big{font-size:17px}
+}
+@media (max-width:520px){
+  :root{--namew:128px}
+  h1{font-size:25px}
+  .tz{text-align:left}
+  .lrow{grid-template-columns:1fr}
+  .lrow .nextdl,.lrow .phases,.lrow .act{grid-column:1}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Deadline Atlas</h1>
+      <p class="sub">Submission deadlines, review phases and conference dates for 26 A*/A venues in AI, ML and data.</p>
+    </div>
+    <div class="tz" id="tz"></div>
+  </header>
+
+  <div class="notice"><strong>Mockup.</strong> Dates follow each venue's usual yearly pattern but have not been checked against the official calls for papers. Locations are left as TBA.</div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="View">
+      <button id="v-timeline" data-view="timeline" aria-pressed="true">Timeline</button>
+      <button id="v-list" data-view="list" aria-pressed="false">List</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Area"></div>
+    <label class="check"><input type="checkbox" id="show-est" checked> Show estimated dates</label>
+  </div>
+
+  <div class="rolling" id="rolling"></div>
+
+  <div id="view"></div>
+
+  <div class="legend" id="legend">
+    <span><i class="sw dia hollow"></i>Abstract</span>
+    <span><i class="sw dia"></i>Paper / round</span>
+    <span><i class="sw bar" style="background:var(--review)"></i>Under review</span>
+    <span><i class="sw bar" style="background:var(--rebuttal);height:5px"></i>Rebuttal</span>
+    <span><i class="sw dot"></i>Notification</span>
+    <span><i class="sw sq"></i>Camera-ready</span>
+    <span><i class="sw bar" style="background:var(--conf)"></i>Conference</span>
+    <span><i class="sw bar" style="border:1.5px dashed var(--faint)"></i>Estimated</span>
+  </div>
+</div>
+<div id="tip" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+// Sample data in the shape of the planned YAML schema. Deadlines are AoE (UTC-12) unless a full timestamp is given.
+const AOE = "T23:59:00-12:00";
+const VENUES = [
+  { id:"iclr", url:"https://iclr.cc", name:"ICLR", edition:2027, area:"ml", rank:"A*", location:"TBA", estimated:false,
+    phases:[
+      {type:"abstract", date:"2026-09-19"}, {type:"paper", date:"2026-09-24"},
+      {type:"rebuttal", start:"2026-11-11", end:"2026-12-02"},
+      {type:"notification", date:"2027-01-22"}, {type:"camera", date:"2027-03-01"},
+      {type:"conference", start:"2027-04-24", end:"2027-04-28"} ]},
+  { id:"aistats", url:"https://aistats.org", name:"AISTATS", edition:2027, area:"ml", rank:"A", location:"TBA", estimated:false,
+    phases:[
+      {type:"abstract", date:"2026-10-02"}, {type:"paper", date:"2026-10-09"},
+      {type:"rebuttal", start:"2026-11-24", end:"2026-12-01"},
+      {type:"notification", date:"2027-01-20"}, {type:"camera", date:"2027-02-20"},
+      {type:"conference", start:"2027-05-02", end:"2027-05-05"} ]},
+  { id:"sigmod", url:"https://sigmod.org", name:"SIGMOD", edition:2027, area:"db", rank:"A*", location:"TBA", estimated:false,
+    phases:[
+      {type:"paper", label:"Round 3", date:"2026-10-17"}, {type:"notification", label:"Round 3", date:"2026-12-12"},
+      {type:"paper", label:"Round 4", date:"2027-01-17"}, {type:"notification", label:"Round 4", date:"2027-03-12"},
+      {type:"conference", start:"2027-06-13", end:"2027-06-18"} ]},
+  { id:"cvpr", url:"https://cvpr.thecvf.com", name:"CVPR", edition:2027, area:"cv", rank:"A*", location:"TBA", estimated:false,
+    phases:[
+      {type:"paper", date:"2026-11-13"},
+      {type:"rebuttal", start:"2027-01-22", end:"2027-01-29"},
+      {type:"notification", date:"2027-02-26"}, {type:"camera", date:"2027-03-26"},
+      {type:"conference", start:"2027-06-14", end:"2027-06-18"} ]},
+  { id:"icml", url:"https://icml.cc", name:"ICML", edition:2027, area:"ml", rank:"A*", location:"TBA", estimated:true,
+    phases:[
+      {type:"abstract", date:"2027-01-22"}, {type:"paper", date:"2027-01-29"},
+      {type:"rebuttal", start:"2027-03-24", end:"2027-03-31"},
+      {type:"notification", date:"2027-05-01"},
+      {type:"conference", start:"2027-07-12", end:"2027-07-17"} ]},
+  { id:"kdd", url:"https://kdd.org", name:"KDD", edition:2027, area:"dm", rank:"A*", location:"TBA", estimated:true,
+    phases:[
+      {type:"paper", label:"Cycle 2", date:"2027-02-08"},
+      {type:"rebuttal", start:"2027-04-03", end:"2027-04-17"},
+      {type:"notification", date:"2027-05-16"},
+      {type:"conference", start:"2027-08-09", end:"2027-08-13"} ]},
+  { id:"acl", url:"https://www.aclweb.org", name:"ACL", edition:2027, area:"nlp", rank:"A*", location:"TBA", estimated:true,
+    phases:[
+      {type:"paper", label:"ARR deadline", date:"2027-02-15"},
+      {type:"rebuttal", start:"2027-03-27", end:"2027-04-02"},
+      {type:"notification", date:"2027-05-15"},
+      {type:"conference", start:"2027-07-25", end:"2027-07-30"} ]},
+  { id:"neurips", url:"https://neurips.cc", name:"NeurIPS", edition:2027, area:"ml", rank:"A*", location:"TBA", estimated:true,
+    phases:[
+      {type:"conference", label:"NeurIPS 2026", location:"TBA", start:"2026-12-06", end:"2026-12-12", estimated:false},
+      {type:"abstract", date:"2027-05-11"}, {type:"paper", date:"2027-05-15"},
+      {type:"rebuttal", start:"2027-07-24", end:"2027-07-31"} ]},
+];
+const ROLLING = [
+  { id:"vldb", url:"https://vldb.org/pvldb/", name:"VLDB", sub:"PVLDB Vol. 20", area:"db", rank:"A*", rule:"1st of every month", day:1 }
+];
+const AREAS = [["all","All"],["ml","Core ML"],["cv","Vision"],["nlp","NLP"],["dm","Data mining"],["db","Databases"]];
+const LABEL = {abstract:"Abstract", paper:"Paper", rebuttal:"Rebuttal", notification:"Notification", camera:"Camera-ready", conference:"Conference"};
+
+const t = s => new Date(s.length === 10 ? s + AOE : s).getTime();
+const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+const START = TODAY.getTime();
+const END = new Date(TODAY.getFullYear() + 1, TODAY.getMonth(), TODAY.getDate()).getTime();
+const pct = ms => ((ms - START) / (END - START)) * 100;
+const clamp = v => Math.max(0, Math.min(100, v));
+
+const localFmt = new Intl.DateTimeFormat(undefined, {weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"});
+const dayFmt = new Intl.DateTimeFormat(undefined, {month:"short", day:"numeric"});
+const aoeFmt = new Intl.DateTimeFormat("en-US", {month:"short", day:"numeric", timeZone:"Etc/GMT+12"});
+const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+let state = { view:"timeline", area:"all", showEst:true };
+try { const v = localStorage.getItem("da-view"); if (v === "list" || v === "timeline") state.view = v; } catch(e) {}
+
+function nextSubmission(v, now){
+  const subs = v.phases.filter(p => (p.type === "abstract" || p.type === "paper") && t(p.date) > now);
+  subs.sort((a,b) => t(a.date) - t(b.date));
+  return subs[0] || null;
+}
+function countdown(ms){
+  if (ms <= 0) return "passed";
+  const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4);
+  return d >= 1 ? `${d}d ${String(h).padStart(2,"0")}h` : `${h}h ${String(m).padStart(2,"0")}m`;
+}
+function urgency(ms){ return ms < 7*864e5 ? "urgent" : ms < 30*864e5 ? "soon" : ""; }
+function phaseName(p){ return p.label ? (p.type === "paper" || p.type === "abstract" ? p.label : `${LABEL[p.type]} (${p.label})`) : LABEL[p.type]; }
+function rangeText(a, b){
+  const da = new Date(a + "T12:00:00"), db = new Date(b + "T12:00:00");
+  return da.getMonth() === db.getMonth()
+    ? `${dayFmt.format(da)}–${db.getDate()}`
+    : `${dayFmt.format(da)} – ${dayFmt.format(db)}`;
+}
+
+function visible(){
+  const now = Date.now();
+  return VENUES
+    .filter(v => state.area === "all" || v.area === state.area)
+    .filter(v => state.showEst || !v.estimated)
+    .map(v => ({ v, next: nextSubmission(v, now) }))
+    .sort((a, b) => (a.next ? t(a.next.date) : Infinity) - (b.next ? t(b.next.date) : Infinity));
+}
+
+function renderChips(){
+  document.getElementById("chips").innerHTML = AREAS.map(([k, l]) =>
+    `<button class="chip" id="area-${k}" data-area="${k}" aria-pressed="${state.area === k}">${l}</button>`).join("");
+}
+
+function renderRolling(){
+  const el = document.getElementById("rolling");
+  const items = ROLLING.filter(r => state.area === "all" || r.area === state.area);
+  el.hidden = items.length === 0;
+  const now = new Date();
+  el.innerHTML = `<span class="lbl">Rolling submissions</span>` + items.map(r => {
+    const dates = [];
+    for (let i = 0; dates.length < 4; i++){
+      const d = new Date(now.getFullYear(), now.getMonth() + i, r.day);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      if (t(iso) > now.getTime()) dates.push(iso);
+    }
+    const ms = t(dates[0]) - now.getTime();
+    return `<span class="ven"><a href="${r.url}" target="_blank" rel="noopener">${r.name}</a><small>${r.sub} · ${r.rule}</small></span>
+      <span class="next">next <b>${aoeFmt.format(new Date(t(dates[0])))}</b> · <span class="cd ${urgency(ms)}" data-cd="${t(dates[0])}">${countdown(ms)}</span></span>
+      <span class="then">then ${dates.slice(1).map(d => aoeFmt.format(new Date(t(d)))).join(", ")}</span>`;
+  }).join("");
+}
+
+function tip(text){ return `data-tip="${text.replace(/"/g, "&quot;")}" tabindex="0"`; }
+
+function renderTimeline(rows){
+  const now = Date.now();
+  let head = "", grid = "";
+  for (let m = 1; m <= 12; m++){
+    const d = new Date(TODAY.getFullYear(), TODAY.getMonth() + m, 1);
+    if (d.getTime() >= END) break;
+    const x = pct(d.getTime()), jan = d.getMonth() === 0;
+    const lbl = d.toLocaleString(undefined, {month:"short"}) + (jan || m === 1 ? " " + d.getFullYear() : "");
+    if (x > 3) head += `<div class="mo${jan ? " jan" : ""}" style="left:${x}%">${lbl}</div>`;
+    grid += `<i style="left:${x}%"></i>`;
+  }
+  grid += `<i class="now" style="left:0"></i>`;
+
+  const body = rows.map(({v, next}) => {
+    const ph = v.phases;
+    let marks = "";
+    // review bands: each paper deadline to the next notification
+    ph.filter(p => p.type === "paper").forEach(p => {
+      const n = ph.filter(q => q.type === "notification" && t(q.date) > t(p.date)).sort((a,b) => t(a.date) - t(b.date))[0];
+      if (!n) return;
+      const a = clamp(pct(t(p.date))), b = clamp(pct(t(n.date)));
+      if (b > a) marks += `<span class="band review${t(n.date) < now ? " past" : ""}" style="left:${a}%;width:${b-a}%" ${tip(`Under review\n${aoeFmt.format(new Date(t(p.date)))} → ${aoeFmt.format(new Date(t(n.date)))}`)}></span>`;
+    });
+    ph.forEach(p => {
+      const past = (p.end ? t(p.end) : t(p.date)) < now ? " past" : "";
+      if (p.type === "rebuttal" || p.type === "conference"){
+        const a = pct(t(p.start)), b = pct(t(p.end));
+        if (b < 0 || a > 100) return;
+        const cls = p.type === "conference" ? "conf" : "rebuttal";
+        marks += `<span class="band ${cls}${past}" style="left:${clamp(a)}%;width:${clamp(b)-clamp(a)}%;${p.estimated === false ? "background:var(--conf);border:0;opacity:1" : ""}" ${tip(`${phaseName(p)}\n${rangeText(p.start, p.end)}${p.type === "conference" ? "\n" + (p.location || v.location) : ""}`)}></span>`;
+        if (p.type === "conference"){
+          const right = b < 78;
+          marks += `<span class="clabel${past}" style="${right ? `left:calc(${clamp(b)}% + 6px)` : `right:calc(${100 - clamp(a)}% + 6px)`}">${p.label ? p.label + ", " : ""}${rangeText(p.start, p.end)} · ${p.location || v.location}</span>`;
+        }
+        return;
+      }
+      const x = pct(t(p.date));
+      if (x < 0 || x > 100) return;
+      const cls = p.type === "abstract" ? "sub hollow" : p.type === "paper" ? "sub" : p.type === "notification" ? "notif" : "camera";
+      const when = p.type === "abstract" || p.type === "paper"
+        ? `${localFmt.format(new Date(t(p.date)))} your time\n${aoeFmt.format(new Date(t(p.date)))}, 23:59 AoE`
+        : aoeFmt.format(new Date(t(p.date)));
+      marks += `<span class="mk ${cls}${past}" style="left:${x}%" ${tip(`${phaseName(p)}\n${when}`)}></span>`;
+    });
+    const ms = next ? t(next.date) - now : 0;
+    const cd = next
+      ? `<span class="cd ${urgency(ms)}" data-cd="${t(next.date)}" data-prefix="${phaseName(next)} in ">${phaseName(next)} in ${countdown(ms)}</span>`
+      : `<span class="cd">No open deadline</span>`;
+    return `<div class="trow${v.estimated ? " est" : ""}">
+      <div class="tname"><div class="vn"><a href="${v.url}" target="_blank" rel="noopener">${v.name}</a><span class="ed">${v.edition}</span><span class="rank">${v.rank}</span>${v.estimated ? '<span class="est-tag">est.</span>' : ""}</div>${cd}</div>
+      <div class="track">${marks}</div></div>`;
+  }).join("");
+
+  return `<div class="tl-scroll"><div class="tl">
+    <div class="tl-head"><div></div><div class="axis">${head}</div></div>
+    ${body}
+    <div class="grid">${grid}</div>
+  </div></div>`;
+}
+
+function renderList(rows){
+  const now = Date.now();
+  return `<div class="list">` + rows.map(({v, next}) => {
+    const ms = next ? t(next.date) - now : 0;
+    const conf = v.phases.filter(p => p.type === "conference").slice(-1)[0];
+    const chips = v.phases.filter(p => p.type !== "conference").map(p => {
+      const done = (p.end ? t(p.end) : t(p.date)) < now;
+      const when = p.start ? rangeText(p.start, p.end) : aoeFmt.format(new Date(t(p.date)));
+      return `<span class="ph${done ? " done" : ""}${next === p ? " is-next" : ""}">${phaseName(p)} ${when}</span>`;
+    }).join("");
+    return `<div class="lrow${v.estimated ? " est" : ""}">
+      <div class="big ${next ? urgency(ms) : ""}"><span data-cd="${next ? t(next.date) : ""}">${next ? countdown(ms) : "–"}</span><small>${next ? "until " + phaseName(next).toLowerCase() : "no open deadline"}</small></div>
+      <div><div class="vn"><a href="${v.url}" target="_blank" rel="noopener">${v.name}</a><span class="ed">${v.edition}</span><span class="rank">${v.rank}</span>${v.estimated ? '<span class="est-tag">est.</span>' : ""}</div>
+        <div class="meta">${AREAS.find(a => a[0] === v.area)[1]} · ${conf ? rangeText(conf.start, conf.end) : "dates TBA"} · ${v.location}</div></div>
+      <div class="nextdl">${next ? `<b>${phaseName(next)}</b> <span class="when">${localFmt.format(new Date(t(next.date)))}</span><div class="aoe">${aoeFmt.format(new Date(t(next.date)))}, 23:59 AoE${v.estimated ? " · estimated from 2026" : ""}</div>` : ""}</div>
+      <div class="phases">${chips}</div>
+      <div class="act"><button class="btn${v.estimated ? " ghost" : ""}" id="cal-${v.id}" data-cal="${v.name}">Add to calendar</button></div>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function render(){
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
+  renderChips();
+  renderRolling();
+  const rows = visible();
+  document.getElementById("view").innerHTML = rows.length
+    ? (state.view === "timeline" ? renderTimeline(rows) : renderList(rows))
+    : `<div class="notice">No venues match this filter.</div>`;
+  document.getElementById("legend").hidden = state.view !== "timeline";
+}
+
+function tick(){
+  const now = Date.now();
+  document.querySelectorAll("[data-cd]").forEach(el => {
+    if (!el.dataset.cd) return;
+    el.textContent = (el.dataset.prefix || "") + countdown(+el.dataset.cd - now);
+  });
+}
+
+document.getElementById("tz").innerHTML = `Times shown in <b>${tzName}</b><br>Deadlines are 23:59 AoE (UTC−12)`;
+document.addEventListener("click", e => {
+  const vb = e.target.closest("[data-view]");
+  if (vb){ state.view = vb.dataset.view; try { localStorage.setItem("da-view", state.view); } catch(err) {} render(); return; }
+  const ab = e.target.closest("[data-area]");
+  if (ab){ state.area = ab.dataset.area; render(); return; }
+  const cb = e.target.closest("[data-cal]");
+  if (cb){
+    const toast = document.getElementById("toast");
+    toast.textContent = `In the real app this subscribes you to ${cb.dataset.cal} deadlines (.ics). It updates when dates change.`;
+    toast.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => toast.hidden = true, 3200);
+  }
+});
+document.getElementById("show-est").addEventListener("change", e => { state.showEst = e.target.checked; render(); });
+
+const tipEl = document.getElementById("tip");
+function showTip(el, x, y){
+  tipEl.textContent = el.dataset.tip; tipEl.hidden = false;
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  tipEl.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x + 12)) + "px";
+  tipEl.style.top = Math.max(8, y - h - 12) + "px";
+}
+document.addEventListener("mousemove", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) showTip(el, e.clientX, e.clientY); else tipEl.hidden = true;
+});
+document.addEventListener("focusin", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el){ const r = el.getBoundingClientRect(); showTip(el, r.left, r.top); }
+});
+document.addEventListener("focusout", () => { tipEl.hidden = true; });
+
+render();
+setInterval(tick, 30000);
+</script>

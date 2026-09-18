@@ -1,0 +1,21 @@
+name: AAAI
+full_name: AAAI Conference on Artificial Intelligence
+area: ai
+rank: A*
+url: https://aaai.org/conference/aaai/
+edition_url_pattern: https://aaai.org/conference/aaai/aaai-{year}/
+editions:
+  - year: 2027
+    url: https://aaai.org/conference/aaai/aaai-27/
+    source: https://aaai.org/conference/aaai/aaai-27/
+    last_verified: 2026-09-18
+    location: {city: Montréal, country: Canada}
+    start: 2027-02-16
+    end: 2027-02-23
+    rounds:
+      - abstract: 2026-07-21
+        paper: 2026-07-28
+        rebuttal: [2026-10-19, 2026-10-25]
+        notification: 2026-11-30
+        camera_ready: 2026-12-14
+        note: Phase 1 rejections are sent on Sep 24, 2026.

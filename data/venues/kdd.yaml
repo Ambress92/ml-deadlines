@@ -1,0 +1,28 @@
+name: KDD
+full_name: ACM SIGKDD Conference on Knowledge Discovery and Data Mining
+area: dm
+rank: A*
+url: https://kdd.org
+edition_url_pattern: https://kdd{year}.kdd.org/
+editions:
+  - year: 2027
+    url: https://kdd2027.kdd.org/
+    cfp_url: https://kdd2027.kdd.org/research-track-call-for-papers/
+    source: https://kdd2027.kdd.org/research-track-call-for-papers/
+    last_verified: 2026-09-18
+    location: {city: San Jose, country: USA}
+    start: 2027-08-01
+    end: 2027-08-05
+    rounds:
+      - name: Cycle 1
+        abstract: 2026-07-19
+        paper: 2026-07-26
+        rebuttal: [2026-09-29, 2026-10-13]
+        notification: 2026-11-14
+      - name: Cycle 2
+        estimated: true
+        abstract: 2027-01-31
+        paper: 2027-02-07
+        rebuttal: [2027-04-03, 2027-04-16]
+        notification: 2027-05-15
+        note: Not announced yet. Estimated from KDD 2026 cycle 2 (abstract Feb 1, paper Feb 8, 2026).

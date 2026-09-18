@@ -1,0 +1,19 @@
+name: WSDM
+full_name: ACM International Conference on Web Search and Data Mining
+area: dm
+rank: A
+url: https://www.wsdm-conference.org
+edition_url_pattern: https://www.wsdm-conference.org/{year}/
+editions:
+  - year: 2027
+    url: https://wsdm-conference.org/2027/
+    cfp_url: https://wsdm-conference.org/2027/cffp.html
+    source: https://wsdm-conference.org/2027/cffp.html
+    last_verified: 2026-09-18
+    location: {city: Hong Kong, country: China}
+    start: 2027-02-15
+    end: 2027-02-19
+    rounds:
+      - abstract: 2026-08-17
+        paper: 2026-08-24
+        notification: 2026-11-02

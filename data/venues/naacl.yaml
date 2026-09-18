@@ -1,0 +1,21 @@
+name: NAACL
+full_name: Annual Conference of the Nations of the Americas Chapter of the ACL
+area: nlp
+rank: A
+url: https://naacl.org
+irregular: true
+notes: NAACL is not held every year, so no next edition is estimated.
+editions:
+  - year: 2027
+    url: https://2027.naacl.org/
+    cfp_url: https://2027.naacl.org/calls/main_conference_papers/
+    source: https://2027.naacl.org/calls/main_conference_papers/
+    last_verified: 2026-09-18
+    location: {city: San Francisco, country: USA}
+    start: 2027-06-01
+    end: 2027-06-05
+    rounds:
+      - paper: 2026-10-12
+        commitment: 2026-12-23
+        notification: 2027-02-10
+        note: The paper deadline is the ACL Rolling Review (ARR) submission deadline. Meta-reviews are released Dec 18, 2026.

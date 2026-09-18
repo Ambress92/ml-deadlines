@@ -1,0 +1,51 @@
+name: Suggest a conference
+description: Propose a conference to add to ML Deadlines.
+title: "Add conference: "
+labels: ["new conference"]
+body:
+  - type: markdown
+    attributes:
+      value: The site lists A* and A conferences (CORE 2023) in machine learning, AI, NLP, vision, data mining, IR and databases.
+  - type: input
+    id: name
+    attributes:
+      label: Short name
+      placeholder: e.g. ICRA
+    validations:
+      required: true
+  - type: input
+    id: full_name
+    attributes:
+      label: Full name
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Core ML, General AI, Vision, NLP, Data mining & IR, Databases]
+    validations:
+      required: true
+  - type: dropdown
+    id: rank
+    attributes:
+      label: CORE 2023 rank
+      description: Check it at https://portal.core.edu.au/conf-ranks/
+      options: ["A*", "A"]
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Official website of the next edition
+    validations:
+      required: true
+  - type: input
+    id: cfp
+    attributes:
+      label: Official page with the important dates
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Several submission rounds, rolling deadlines, held every other year, ...

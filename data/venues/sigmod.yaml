@@ -1,0 +1,41 @@
+name: SIGMOD
+full_name: ACM SIGMOD International Conference on Management of Data
+area: db
+rank: A*
+url: https://sigmod.org
+edition_url_pattern: https://{year}.sigmod.org/
+notes: Each round also has a revised-paper deadline and a final notification, listed in the round notes.
+editions:
+  - year: 2027
+    url: https://2027.sigmod.org/
+    cfp_url: https://2027.sigmod.org/calls_papers_sigmod_research.shtml
+    source: https://2027.sigmod.org/calls_papers_important_dates.shtml
+    last_verified: 2026-09-18
+    location: {city: Huntington Beach, country: USA}
+    start: 2027-06-13
+    end: 2027-06-19
+    rounds:
+      - name: Round 1
+        abstract: 2026-01-10
+        paper: 2026-01-17
+        rebuttal: [2026-03-10, 2026-03-17]
+        notification: 2026-04-19
+        note: Revised paper May 19, 2026; final notification Jun 12, 2026.
+      - name: Round 2
+        abstract: 2026-04-10
+        paper: 2026-04-17
+        rebuttal: [2026-06-10, 2026-06-17]
+        notification: 2026-07-19
+        note: Revised paper Aug 19, 2026; final notification Sep 12, 2026.
+      - name: Round 3
+        abstract: 2026-07-10
+        paper: 2026-07-17
+        rebuttal: [2026-09-10, 2026-09-17]
+        notification: 2026-10-19
+        note: Revised paper Nov 19, 2026; final notification Dec 12, 2026.
+      - name: Round 4
+        abstract: 2026-10-10
+        paper: 2026-10-17
+        rebuttal: [2026-12-10, 2026-12-17]
+        notification: 2027-01-19
+        note: Revised paper Feb 19, 2027; final notification Mar 12, 2027.

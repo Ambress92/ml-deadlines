@@ -1,0 +1,21 @@
+name: ICLR
+full_name: International Conference on Learning Representations
+area: ml
+rank: A*
+url: https://iclr.cc
+edition_url_pattern: https://iclr.cc/Conferences/{year}
+editions:
+  - year: 2027
+    url: https://iclr.cc/Conferences/2027
+    cfp_url: https://iclr.cc/Conferences/2027/CallForPapers
+    source: https://iclr.cc/Conferences/2027/Dates
+    last_verified: 2026-09-18
+    location: {city: San Francisco, country: USA}
+    start: 2027-04-26
+    end: 2027-04-30
+    notes: The iclr.cc home page shows the Moscone Center, San Francisco; the venue is not formally announced yet.
+    rounds:
+      - abstract: 2026-09-18
+        paper: 2026-09-25
+        rebuttal: [2026-11-05, 2026-11-18]
+        notification: 2026-12-16

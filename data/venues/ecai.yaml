@@ -1,0 +1,19 @@
+name: ECAI
+full_name: European Conference on Artificial Intelligence
+area: ai
+rank: A
+url: https://www.eurai.org
+editions:
+  - year: 2027
+    url: https://ecai2027.org/
+    source: https://ecai2027.org/
+    last_verified: 2026-09-18
+    location: {city: Athens, country: Greece}
+    start: 2027-10-02
+    end: 2027-10-07
+    notes: The page does not state a time zone; AoE assumed.
+    rounds:
+      - paper: 2027-04-14
+        rebuttal: [2027-06-15, 2027-06-18]
+        notification: 2027-07-15
+        note: Phase 1 notification May 15, 2027.

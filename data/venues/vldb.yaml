@@ -1,0 +1,21 @@
+name: VLDB
+full_name: International Conference on Very Large Data Bases (PVLDB)
+area: db
+rank: A*
+url: https://vldb.org/pvldb/
+rolling:
+  every: month
+  day: 1
+  time: "17:00"
+  timezone: America/Los_Angeles
+  notification_days: 45
+  label: PVLDB Vol. 20, 1st of every month
+  note: Initial reviews usually arrive by the 15th of the next month. June 1 is the last revision deadline for VLDB 2027.
+editions:
+  - year: 2027
+    url: https://vldb.org/2027/
+    source: https://vldb.org/pvldb/volumes/20/submission
+    last_verified: 2026-09-18
+    location: {city: Athens, country: Greece}
+    start: 2027-08-23
+    end: 2027-08-27

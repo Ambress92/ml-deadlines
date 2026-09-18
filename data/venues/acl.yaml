@@ -1,0 +1,27 @@
+name: ACL
+full_name: Annual Meeting of the Association for Computational Linguistics
+area: nlp
+rank: A*
+url: https://www.aclweb.org
+editions:
+  - year: 2026
+    url: https://2026.aclweb.org/
+    source: https://2026.aclweb.org/
+    last_verified: 2026-09-18
+    location: {city: San Diego, country: USA}
+    start: 2026-07-02
+    end: 2026-07-07
+    rounds:
+      - paper: 2026-01-05
+        commitment: 2026-03-14
+        notification: 2026-04-04
+        camera_ready: 2026-04-19
+        note: The paper deadline is the ACL Rolling Review (ARR) submission deadline.
+  - year: 2027
+    url: https://2027.aclweb.org/
+    source: https://2027.aclweb.org/
+    last_verified: 2026-09-18
+    location: {city: Kyoto, country: Japan}
+    start: 2027-08-17
+    end: 2027-08-22
+    notes: All deadlines are listed as TBA.

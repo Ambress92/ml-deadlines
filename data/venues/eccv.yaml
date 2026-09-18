@@ -1,0 +1,22 @@
+name: ECCV
+full_name: European Conference on Computer Vision
+area: cv
+rank: A*
+url: https://eccv.ecva.net
+every_years: 2
+edition_url_pattern: https://eccv.ecva.net/Conferences/{year}
+editions:
+  - year: 2026
+    url: https://eccv.ecva.net/Conferences/2026
+    source: https://eccv.ecva.net/Conferences/2026/Dates
+    last_verified: 2026-09-18
+    location: {city: Malmö, country: Sweden}
+    start: 2026-09-08
+    end: 2026-09-12
+    timezone: UTC
+    rounds:
+      - paper: 2026-03-05 22:00
+        rebuttal: [2026-05-02, 2026-05-11]
+        notification: 2026-06-17
+        camera_ready: 2026-06-30 23:59 AoE
+        note: Paper registration closed Feb 26, 2026.

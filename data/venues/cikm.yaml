@@ -1,0 +1,19 @@
+name: CIKM
+full_name: ACM International Conference on Information and Knowledge Management
+area: dm
+rank: A
+url: https://www.cikmconference.org
+editions:
+  - year: 2026
+    url: https://cikm2026.diag.uniroma1.it/
+    cfp_url: https://cikm2026.diag.uniroma1.it/full-research-papers/
+    source: https://cikm2026.diag.uniroma1.it/full-research-papers/
+    last_verified: 2026-09-18
+    location: {city: Rome, country: Italy}
+    start: 2026-11-07
+    end: 2026-11-11
+    rounds:
+      - abstract: 2026-05-16
+        paper: 2026-05-23
+        notification: 2026-08-07
+        camera_ready: 2026-08-23

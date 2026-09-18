@@ -1,0 +1,20 @@
+name: SIGIR
+full_name: ACM SIGIR Conference on Research and Development in Information Retrieval
+area: dm
+rank: A*
+url: https://sigir.org
+edition_url_pattern: https://sigir{year}.org/
+editions:
+  - year: 2027
+    url: https://sigir2027.org/
+    source: https://sigir2027.org/
+    last_verified: 2026-09-18
+    location: {city: San Jose, country: USA}
+    start: 2027-07-18
+    end: 2027-07-24
+    notes: The page does not state a time zone; AoE assumed.
+    rounds:
+      - abstract: 2027-01-14
+        paper: 2027-01-21
+        notification: 2027-04-05
+        camera_ready: 2027-04-30

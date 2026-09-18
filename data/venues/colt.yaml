@@ -1,0 +1,26 @@
+name: COLT
+full_name: Conference on Learning Theory
+area: ml
+rank: A*
+url: https://learningtheory.org
+edition_url_pattern: https://learningtheory.org/colt{year}/
+editions:
+  - year: 2026
+    url: https://learningtheory.org/colt2026/
+    source: https://learningtheory.org/colt2026/
+    last_verified: 2026-09-18
+    location: {city: San Diego, country: USA}
+    start: 2026-06-29
+    end: 2026-07-03
+    rounds:
+      - paper: 2026-02-04
+        rebuttal: [2026-04-03, 2026-04-10]
+        notification: 2026-05-04
+  - year: 2027
+    url: https://learningtheory.org/colt2027/
+    source: https://learningtheory.org/colt2027/
+    last_verified: 2026-09-18
+    location: {city: Tokyo, country: Japan}
+    start: 2027-06-28
+    end: 2027-07-02
+    notes: Deadlines are listed as "Date TBD".

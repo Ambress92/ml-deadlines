@@ -1,0 +1,25 @@
+name: ECML-PKDD
+full_name: European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases
+area: dm
+rank: A
+url: https://ecmlpkdd.org
+edition_url_pattern: https://ecmlpkdd.org/{year}/
+editions:
+  - year: 2026
+    url: https://ecmlpkdd.org/2026/
+    source: https://ecmlpkdd.org/2026/submissions-research-track/
+    last_verified: 2026-09-18
+    location: {city: Naples, country: Italy}
+    start: 2026-09-07
+    end: 2026-09-11
+    rounds:
+      - abstract: 2026-03-05
+        paper: 2026-03-12
+        notification: 2026-05-27
+        camera_ready: 2026-06-20
+  - year: 2027
+    url: https://ecmlpkdd.org/2027/
+    source: https://ecmlpkdd.org/2027/
+    last_verified: 2026-09-18
+    location: {city: Eindhoven, country: Netherlands}
+    notes: Held in September 2027; exact dates and deadlines not announced.

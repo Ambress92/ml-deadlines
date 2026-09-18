@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ML Deadlines</title>
+<meta name="description" content="Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, data mining and databases. Subscribe in your calendar.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ML Deadlines</h1>
+      <p class="sub">Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, data mining and databases.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn" id="sub-all" data-sub="all">Subscribe to all deadlines</button>
+      <div class="tz" id="tz"></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="View">
+      <button id="v-timeline" data-view="timeline" aria-pressed="true">Timeline</button>
+      <button id="v-list" data-view="list" aria-pressed="false">List</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Area"></div>
+    <label class="check"><input type="checkbox" id="show-est" checked> Show estimated dates</label>
+  </div>
+
+  <div class="rolling" id="rolling" hidden></div>
+
+  <main id="view"></main>
+
+  <div class="legend" id="legend">
+    <span><i class="sw dia hollow"></i>Abstract</span>
+    <span><i class="sw dia"></i>Paper</span>
+    <span><i class="sw bar" style="background:var(--review)"></i>Under review</span>
+    <span><i class="sw bar" style="background:var(--rebuttal);height:5px"></i>Rebuttal</span>
+    <span><i class="sw ring"></i>Commitment (ARR)</span>
+    <span><i class="sw dot"></i>Notification</span>
+    <span><i class="sw sq"></i>Camera-ready</span>
+    <span><i class="sw bar" style="background:var(--conf)"></i>Conference</span>
+    <span><i class="sw bar" style="border:1.5px dashed var(--faint)"></i>Estimated from last year</span>
+  </div>
+
+  <footer id="footer"></footer>
+</div>
+<div id="tip" hidden></div>
+<div id="toast" hidden></div>
+<div class="menu" id="menu" hidden></div>
+<script>window.__DATA__ = /*__DATA__*/null;</script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+name: ICDE
+full_name: IEEE International Conference on Data Engineering
+area: db
+rank: A*
+url: https://icde2027.github.io/
+edition_url_pattern: https://icde{year}.github.io/
+editions:
+  - year: 2027
+    url: https://icde2027.github.io/
+    cfp_url: https://icde2027.github.io/cf-research-papers.html
+    source: https://icde2027.github.io/important-dates.html
+    last_verified: 2026-09-18
+    location: {city: Copenhagen, country: Denmark}
+    start: 2027-05-17
+    end: 2027-05-21
+    timezone: America/Los_Angeles
+    rounds:
+      - name: Round 1
+        paper: 2026-06-11 17:00
+        rebuttal: [2026-08-08, 2026-08-15]
+        notification: 2026-09-10
+        camera_ready: 2026-10-10
+      - name: Round 2
+        paper: 2026-11-11 17:00
+        rebuttal: [2027-01-08, 2027-01-15]
+        notification: 2027-02-10
+        camera_ready: 2027-03-10

@@ -1,0 +1,26 @@
+name: Report a wrong or new date
+description: A deadline, date or location is wrong, or new dates have been announced.
+title: "Update: "
+labels: ["data update"]
+body:
+  - type: input
+    id: venue
+    attributes:
+      label: Conference and year
+      placeholder: e.g. ICML 2027
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What should change
+      placeholder: e.g. The paper deadline is Jan 29, 2027 (AoE), not Jan 28.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official page that shows the correct information
+      description: Only official conference pages are used as sources.
+    validations:
+      required: true

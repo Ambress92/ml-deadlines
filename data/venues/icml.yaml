@@ -1,0 +1,20 @@
+name: ICML
+full_name: International Conference on Machine Learning
+area: ml
+rank: A*
+url: https://icml.cc
+edition_url_pattern: https://icml.cc/Conferences/{year}
+notes: ICML 2027 will be in South America; the city is not announced (icml.cc/Conferences/FutureMeetings).
+editions:
+  - year: 2026
+    url: https://icml.cc/Conferences/2026
+    source: https://icml.cc/Conferences/2026/Dates
+    last_verified: 2026-09-18
+    location: {city: Seoul, country: South Korea}
+    start: 2026-07-06
+    end: 2026-07-11
+    rounds:
+      - abstract: 2026-01-23
+        paper: 2026-01-28
+        notification: 2026-04-30
+        note: Author response due Mar 30, 2026.

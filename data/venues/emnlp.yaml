@@ -1,0 +1,22 @@
+name: EMNLP
+full_name: Conference on Empirical Methods in Natural Language Processing
+area: nlp
+rank: A*
+url: https://www.aclweb.org
+edition_url_pattern: https://{year}.emnlp.org/
+editions:
+  - year: 2026
+    url: https://2026.emnlp.org/
+    source: https://2026.emnlp.org/
+    last_verified: 2026-09-18
+    location: {city: Budapest, country: Hungary}
+    format: hybrid
+    start: 2026-10-24
+    end: 2026-10-29
+    rounds:
+      - paper: 2026-05-25
+        rebuttal: [2026-07-07, 2026-07-13]
+        commitment: 2026-08-02
+        notification: 2026-08-20
+        camera_ready: 2026-08-30
+        note: The paper deadline is the ACL Rolling Review (ARR) submission deadline.

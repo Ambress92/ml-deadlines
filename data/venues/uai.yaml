@@ -1,0 +1,18 @@
+name: UAI
+full_name: Conference on Uncertainty in Artificial Intelligence
+area: ml
+rank: A
+url: https://www.auai.org
+edition_url_pattern: https://www.auai.org/uai{year}/
+editions:
+  - year: 2026
+    url: https://www.auai.org/uai2026/
+    source: https://www.auai.org/uai2026/call_for_papers
+    last_verified: 2026-09-18
+    location: {city: Amsterdam, country: Netherlands}
+    start: 2026-08-17
+    end: 2026-08-21
+    rounds:
+      - paper: 2026-02-25
+        rebuttal: [2026-04-23, 2026-05-02]
+        notification: 2026-06-01

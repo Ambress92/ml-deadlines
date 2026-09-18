@@ -1,0 +1,29 @@
+name: IJCAI
+full_name: International Joint Conference on Artificial Intelligence
+area: ai
+rank: A*
+url: https://www.ijcai.org
+editions:
+  - year: 2026
+    url: https://2026.ijcai.org/
+    source: https://2026.ijcai.org/important-dates/
+    last_verified: 2026-09-18
+    location: {city: Bremen, country: Germany}
+    start: 2026-08-15
+    end: 2026-08-21
+    notes: Held jointly with ECAI as IJCAI-ECAI 2026.
+    rounds:
+      - abstract: 2026-01-12
+        paper: 2026-01-19
+        rebuttal: [2026-04-07, 2026-04-10]
+        notification: 2026-04-29
+        camera_ready: 2026-05-20
+  - year: 2027
+    source: https://www.ijcai.org/future_conferences
+    last_verified: 2026-09-18
+    location:
+      - {city: Kyoto, country: Japan}
+      - {city: Hengqin, country: China}
+    start: 2027-08-07
+    end: 2027-08-17
+    notes: Kyoto Aug 7-13, then Hengqin Aug 15-17. Call for papers not published yet.

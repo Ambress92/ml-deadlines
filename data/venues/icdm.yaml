@@ -1,0 +1,17 @@
+name: ICDM
+full_name: IEEE International Conference on Data Mining
+area: dm
+rank: A*
+url: https://www.cs.uvm.edu/~icdm/
+editions:
+  - year: 2026
+    url: https://icdm2026.neu.edu.cn/
+    source: https://icdm2026.neu.edu.cn/
+    last_verified: 2026-09-18
+    location: {city: Shenyang, country: China}
+    start: 2026-11-12
+    end: 2026-11-15
+    notes: The page does not state a time zone; AoE assumed.
+    rounds:
+      - paper: 2026-06-06
+        notification: 2026-08-16

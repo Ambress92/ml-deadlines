@@ -1,0 +1,24 @@
+name: NeurIPS
+full_name: Conference on Neural Information Processing Systems
+area: ml
+rank: A*
+url: https://neurips.cc
+edition_url_pattern: https://neurips.cc/Conferences/{year}
+notes: NeurIPS 2027 will be in Europe; the city is not announced (neurips.cc/Conferences/FutureMeetings).
+editions:
+  - year: 2026
+    url: https://neurips.cc/Conferences/2026
+    source: https://neurips.cc/Conferences/2026/Dates
+    last_verified: 2026-09-18
+    location:
+      - {city: Sydney, country: Australia}
+      - {city: Atlanta, country: USA}
+      - {city: Paris, country: France}
+    start: 2026-12-06
+    end: 2026-12-13
+    notes: Held in three cities. Sydney runs Dec 6-13; Atlanta and Paris run Dec 9-13.
+    rounds:
+      - abstract: 2026-05-04
+        paper: 2026-05-06
+        rebuttal: [2026-07-27, 2026-08-03]
+        notification: 2026-09-24

@@ -1,0 +1,19 @@
+name: WWW
+full_name: The ACM Web Conference
+area: dm
+rank: A*
+url: https://www2027.thewebconf.org/
+editions:
+  - year: 2027
+    url: https://www2027.thewebconf.org/
+    cfp_url: https://www2027.thewebconf.org/research-track-papers/
+    source: https://www2027.thewebconf.org/important-dates/
+    last_verified: 2026-09-18
+    location: {city: Dublin, country: Ireland}
+    notes: Conference dates are not stated on the official pages yet.
+    rounds:
+      - abstract: 2026-10-18
+        paper: 2026-10-25
+        rebuttal: [2026-12-21, 2026-12-31]
+        notification: 2027-01-04
+        camera_ready: 2027-01-31

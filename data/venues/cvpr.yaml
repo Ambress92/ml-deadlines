@@ -1,0 +1,19 @@
+name: CVPR
+full_name: IEEE/CVF Conference on Computer Vision and Pattern Recognition
+area: cv
+rank: A*
+url: https://cvpr.thecvf.com
+edition_url_pattern: https://cvpr.thecvf.com/Conferences/{year}
+editions:
+  - year: 2027
+    url: https://cvpr.thecvf.com/Conferences/2027
+    cfp_url: https://cvpr.thecvf.com/Conferences/2027/CallForPapers
+    source: https://cvpr.thecvf.com/Conferences/2027/Dates
+    last_verified: 2026-09-18
+    location: {city: Seattle, country: USA}
+    start: 2027-06-20
+    end: 2027-06-25
+    rounds:
+      - paper: 2026-11-16
+        notification: 2027-02-25
+        note: Paper registration closes Nov 10, 2026; supplementary material is due Nov 23, 2026.

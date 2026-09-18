@@ -1,0 +1,27 @@
+name: ICCV
+full_name: IEEE/CVF International Conference on Computer Vision
+area: cv
+rank: A*
+url: https://iccv.thecvf.com
+every_years: 2
+edition_url_pattern: https://iccv.thecvf.com/Conferences/{year}
+editions:
+  - year: 2025
+    url: https://iccv.thecvf.com/Conferences/2025
+    source: https://iccv.thecvf.com/Conferences/2025/Dates
+    last_verified: 2026-09-18
+    location: {city: Honolulu, country: USA}
+    start: 2025-10-19
+    end: 2025-10-23
+    timezone: Pacific/Honolulu
+    rounds:
+      - paper: 2025-03-07
+        notification: 2025-06-25
+        note: Rebuttals were due May 16, 2025.
+  - year: 2027
+    source: https://www.thecvf.com/?p=137
+    last_verified: 2026-09-18
+    location: {city: Hong Kong, country: China}
+    start: 2027-10-02
+    end: 2027-10-08
+    notes: Call for papers not published yet.
