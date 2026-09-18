@@ -79,10 +79,11 @@
     const START = today.getTime() - 14 * DAY;
     const END = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).getTime();
     const pct = ms => ((ms - START) / (END - START)) * 100;
-    const clamp = x => Math.max(0, Math.min(100, x));
+    const nowX = pct(now);
+    // nothing is drawn before today: bands that started earlier begin at the today line
+    const clamp = x => Math.max(nowX, Math.min(100, x));
 
     let head = "", grid = "";
-    const nowX = pct(now);
     let firstLabel = true;
     for (let m = 0; m <= 12; m++) {
       const d = new Date(today.getFullYear(), today.getMonth() + m, 1);
@@ -112,7 +113,7 @@
       events.forEach(e => {
         if (e.type === "rebuttal" || e.type === "conference") {
           const a = pct(day(e.start).getTime() - 12 * 36e5), b = pct(endOfDay(e.end));
-          if (b < 0 || a > 100) return;
+          if (b < nowX || a > 100) return;
           const isConf = e.type === "conference";
           const prefix = isConf && e.edition !== ed.year ? `${v.name} ${e.edition}, ` : "";
           const loc = e.location || "location TBA", city = e.city || "location TBA";
@@ -124,7 +125,7 @@
           return;
         }
         const x = pct(e.t);
-        if (x < 0 || x > 100) return;
+        if (x < nowX || x > 100) return;
         const shape = {abstract: "sub hollow", paper: "sub", commitment: "commit", notification: "notif"}[e.type] || "camera";
         const when = SUBMISSION.has(e.type) ? `${localFmt.format(new Date(e.t))} your time\n${e.when}` : e.when;
         marks += `<span class="mk ${shape}${cls(e)}" style="left:${x}%" ${tip(`${phaseName(e)}${e.estimated ? " (estimated)" : ""}\n${when}${e.note ? "\n" + e.note : ""}`)}></span>`;
