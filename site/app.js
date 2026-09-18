@@ -145,8 +145,10 @@
       const live = new Set(events.filter(e => e.edition === ed.year && evEnd(e) >= now).map(e => e.round));
       const chips = events.filter(e => e.edition === ed.year && e.type !== "conference" && live.has(e.round))
         .sort((a, b) => (a.t ?? day(a.start).getTime()) - (b.t ?? day(b.start).getTime())).map(e => {
-        const when = e.start ? rangeText(e.start, e.end) : e.when.replace(/, \d\d:\d\d .*$/, "");
-        return `<span class="ph${evEnd(e) < now ? " done" : ""}${next === e ? " is-next" : ""}">${esc(phaseName(e))} ${esc(when)}</span>`;
+        // deadlines in the visitor's time zone (official time on hover); ranges keep the venue's dates
+        const when = e.start ? rangeText(e.start, e.end) : dayFmt.format(new Date(e.t));
+        const title = e.t ? ` title="${esc(`${localFmt.format(new Date(e.t))} your time · ${e.when}`)}"` : "";
+        return `<span class="ph${evEnd(e) < now ? " done" : ""}${next === e ? " is-next" : ""}"${title}>${esc(phaseName(e))} ${esc(when)}</span>`;
       }).join("");
       const conf = ed.start ? rangeText(ed.start, ed.end) : "dates TBA";
       const estFrom = ed.based_on || ed.year - 1;
