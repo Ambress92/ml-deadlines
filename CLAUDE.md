@@ -15,6 +15,7 @@ A static website listing deadlines, dates and locations of 26 A*/A conferences (
 ## Data rules
 
 - Only official conference pages are sources. Never use aggregators (aideadlin.es, wikicfp, mldeadlines, paperpilot, and so on) or search-engine summaries. If an official page does not state something, leave the field empty. Never guess.
+- Read the official page's raw text (the date lines saved in `.cache/snapshots/`, or the page itself), never a summary of it. Summaries have missed conference dates that were on the page (AISTATS, WWW, CVPR rebuttal). Also check the home page and the call for papers, not only the dates page.
 - Every non-estimated edition needs `source` (the page the dates come from) and `last_verified` (the date you checked it).
 - Keep deadlines in the time zone that the official page uses. If the page states none, use AoE and say so in `notes`.
 - Only record `abstract` if the venue requires an abstract before the paper deadline. Paper registration without an abstract (e.g. CVPR) goes in the round's `note`.

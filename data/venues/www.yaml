@@ -10,7 +10,9 @@ editions:
     source: https://www2027.thewebconf.org/important-dates/
     last_verified: 2026-09-18
     location: {city: Dublin, country: Ireland}
-    notes: Conference dates are not stated on the official pages yet.
+    start: 2027-05-10
+    end: 2027-05-14
+    notes: Conference dates are on the research track call (cfp_url).
     rounds:
       - abstract: 2026-10-18
         paper: 2026-10-25

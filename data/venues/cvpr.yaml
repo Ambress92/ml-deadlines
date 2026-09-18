@@ -15,5 +15,6 @@ editions:
     end: 2027-06-25
     rounds:
       - paper: 2026-11-16
+        rebuttal: [2027-01-25, 2027-02-01]
         notification: 2027-02-25
         note: Paper registration closes Nov 10, 2026; supplementary material is due Nov 23, 2026.

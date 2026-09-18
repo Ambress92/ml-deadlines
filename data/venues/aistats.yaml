@@ -10,7 +10,9 @@ editions:
     source: https://virtual.aistats.org/Conferences/2027/Dates
     last_verified: 2026-09-18
     location: {city: Montréal, country: Canada}
-    notes: Conference dates not announced yet.
+    start: 2027-05-03
+    end: 2027-05-06
+    notes: Conference dates and location are on https://virtual.aistats.org/Conferences/2027.
     rounds:
       - abstract: 2026-09-29
         paper: 2026-10-06
