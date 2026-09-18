@@ -77,9 +77,11 @@
 
   function renderTimeline(list, now) {
     const today = new Date(now); today.setHours(0, 0, 0, 0);
-    // two weeks of lead-in keep today's deadlines off the chart edge; the axis still runs 12 months ahead
+    // two weeks of lead-in keep today's deadlines off the chart edge
     const START = today.getTime() - 14 * DAY;
-    const END = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).getTime();
+    // phones show 9 months ahead so markers have room; desktop shows 12
+    const months = narrowQuery.matches ? 9 : 12;
+    const END = new Date(today.getFullYear(), today.getMonth() + months, today.getDate()).getTime();
     const pct = ms => ((ms - START) / (END - START)) * 100;
     const nowX = pct(now);
     // nothing is drawn before today: bands that started earlier begin at the today line
