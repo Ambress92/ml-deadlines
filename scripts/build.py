@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import functools
+import hashlib
 import http.server
 import json
 import shutil
@@ -167,6 +168,10 @@ def build(now: dt.datetime) -> int:
     page = (SITE_DIR / "index.html").read_text()
     blob = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     page = page.replace("/*__DATA__*/null", blob)
+    # version tags make browsers fetch changed assets instead of a cached copy
+    for asset in ("style.css", "app.js"):
+        tag = hashlib.sha1((SITE_DIR / asset).read_bytes()).hexdigest()[:8]
+        page = page.replace(f'"{asset}"', f'"{asset}?v={tag}"')
     (DIST / "index.html").write_text(page)
     for asset in ("style.css", "app.js", "favicon.svg"):
         shutil.copy(SITE_DIR / asset, DIST / asset)
