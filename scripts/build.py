@@ -23,6 +23,7 @@ from venues import PHASE_LABELS, ROOT, load_all, resolve
 SITE_DIR = ROOT / "site"
 DIST = ROOT / "dist"
 REPO_URL = "https://github.com/Ambress92/ml-deadlines"
+SITE_URL = "https://ambress92.github.io/ml-deadlines/"
 KEEP_PAST_DAYS = 120  # editions whose conference ended longer ago are dropped from the site
 
 
@@ -176,6 +177,11 @@ def build(now: dt.datetime) -> int:
     for asset in ("style.css", "app.js", "favicon.svg", "og.png"):
         shutil.copy(SITE_DIR / asset, DIST / asset)
     (DIST / ".nojekyll").write_text("")
+    (DIST / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <url><loc>{SITE_URL}</loc><lastmod>{now:%Y-%m-%d}</lastmod></url>\n"
+        "</urlset>\n")
 
     n_est = sum(1 for v in venues for e in v["editions"] if e["estimated"])
     print(f"Built {len(venues)} venues ({n_est} estimated editions) into {DIST.relative_to(ROOT)}/")
