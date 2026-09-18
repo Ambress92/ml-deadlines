@@ -215,7 +215,7 @@
     const https = new URL(`ics/${id}.ics`, location.href).href;
     const webcal = https.replace(/^https?:/, "webcal:");
     const menu = document.getElementById("menu");
-    menu.innerHTML = `<div class="mh">${id === "all" ? "All venues" : esc(v.name)}</div>
+    menu.innerHTML = `<div class="mh">${esc(v.name)}</div>
       <a href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener" data-track="${esc(id)}/google">Google Calendar</a>
       <a href="${esc(webcal)}" data-track="${esc(id)}/webcal">Apple Calendar or Outlook</a>
       <a href="${esc(https)}" download data-track="${esc(id)}/download">Download .ics file</a>
