@@ -161,4 +161,28 @@ footer a:hover{color:var(--accent)}
   .lrow{grid-template-columns:1fr}
   .lrow .nextdl,.lrow .phases,.lrow .act,.lrow .src{grid-column:1}
 }
+/* phones: one stacked row per venue (name above a full-width track), all 12 months on screen */
+@media (max-width:640px){
+  .wrap{padding-inline:14px}
+  .tl{min-width:0}
+  .tl-head{grid-template-columns:1fr; height:30px}
+  .tl-head > div:first-child{display:none}
+  .grid{left:0}
+  .trow{grid-template-columns:1fr; min-height:0}
+  .tname{position:relative; border-right:0; padding:8px 10px 2px; flex-direction:row; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:0 10px; z-index:4}
+  .tname .row1{flex:1 1 auto; min-width:0}
+  .tname .cd{order:3; flex-basis:100%; font-size:11.5px}
+  .track{height:30px}
+  .vn{font-size:14px}
+  .mo{font-size:10px; padding-left:3px; top:9px}
+  .mk.sub{width:9px; height:9px; margin:-4.5px 0 0 -4.5px}
+  .mk.notif{width:11px; height:11px; margin:-5.5px 0 0 -5.5px}
+  .mk.commit{width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-width:2px}
+  .mk.camera{width:6px; height:6px; margin:-3px 0 0 -3px}
+  .band{height:7px; margin-top:-3.5px}
+  .band.rebuttal{height:4px; margin-top:-2px}
+  .band.conf{height:11px; margin-top:-5.5px}
+  .clabel{font-size:10px}
+  .icon-btn{width:24px; height:24px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}

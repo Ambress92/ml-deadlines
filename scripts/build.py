@@ -3,6 +3,7 @@
     python scripts/build.py            validate the data and build dist/
     python scripts/build.py --check    validate only
     python scripts/build.py --serve    build, then serve dist/ on localhost:8000
+    python scripts/build.py --serve --lan   same, reachable from a phone on the same Wi-Fi
 
 Output: dist/index.html (data embedded), dist/data.json, dist/ics/<id>.ics
 for each venue and dist/ics/all.ics.
@@ -192,6 +193,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="validate the data only")
     ap.add_argument("--serve", action="store_true", help="serve dist/ on localhost after building")
+    ap.add_argument("--lan", action="store_true", help="with --serve: listen on the local network, not only localhost")
     ap.add_argument("--today", help="pretend it is this date (YYYY-MM-DD), for testing")
     args = ap.parse_args()
 
@@ -208,8 +210,9 @@ def main() -> int:
     code = build(now)
     if code == 0 and args.serve:
         handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(DIST))
-        print("Serving on http://localhost:8000 (Ctrl+C to stop)")
-        http.server.ThreadingHTTPServer(("127.0.0.1", 8000), handler).serve_forever()
+        host = "0.0.0.0" if args.lan else "127.0.0.1"
+        print(f"Serving on http://{'<this computer IP>' if args.lan else 'localhost'}:8000 (Ctrl+C to stop)")
+        http.server.ThreadingHTTPServer((host, 8000), handler).serve_forever()
     return code
 
 

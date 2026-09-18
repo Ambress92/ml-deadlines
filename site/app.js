@@ -11,6 +11,8 @@
   const localFmt = new Intl.DateTimeFormat(undefined, {weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"});
   const dayFmt = new Intl.DateTimeFormat(undefined, {month: "short", day: "numeric"});
   const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // phones get a stacked timeline that fits all 12 months on screen (see style.css)
+  const narrowQuery = window.matchMedia("(max-width: 640px)");
 
   let state = {view: "timeline", area: "all", showEst: true};
   try {
@@ -90,7 +92,10 @@
       if (d.getTime() <= START) continue;
       if (d.getTime() >= END) break;
       const x = pct(d.getTime()), jan = d.getMonth() === 0;
-      const lbl = d.toLocaleString(undefined, {month: "short"}) + (jan || firstLabel ? " " + d.getFullYear() : "");
+      const narrow = narrowQuery.matches;
+      const year = " " + d.getFullYear();
+      // on phones January is marked in bold instead of carrying the year, to save space
+      const lbl = d.toLocaleString(undefined, {month: "short"}) + (!narrow && (jan || firstLabel) ? year : "");
       if (Math.abs(x - nowX) > 2) {
         head += `<div class="mo${jan ? " jan" : ""}" style="left:${x}%">${lbl}</div>`;
         firstLabel = false;
@@ -119,8 +124,10 @@
           const loc = e.location || "location TBA", city = e.city || "location TBA";
           marks += `<span class="band ${isConf ? "conf" : "rebuttal"}${cls(e)}" style="left:${clamp(a)}%;width:${clamp(b) - clamp(a)}%" ${tip(`${isConf ? `${v.name} ${e.edition}` : phaseName(e)}\n${rangeText(e.start, e.end)}${isConf ? "\n" + loc : ""}${e.estimated ? "\nEstimated" : ""}`)}></span>`;
           if (isConf) {
-            const pos = b < 82 ? `left:calc(${clamp(b)}% + 6px)` : `right:calc(${100 - clamp(a)}% + 6px)`;
-            marks += `<span class="clabel${cls(e)}" style="${pos}">${esc(prefix + rangeText(e.start, e.end) + " · " + city)}</span>`;
+            const narrow = narrowQuery.matches;
+            const pos = b < (narrow ? 72 : 82) ? `left:calc(${clamp(b)}% + 5px)` : `right:calc(${100 - clamp(a)}% + 5px)`;
+            const text = narrow ? (e.city || "TBA").split(" / ")[0] : prefix + rangeText(e.start, e.end) + " · " + city;
+            marks += `<span class="clabel${cls(e)}" style="${pos}">${esc(text)}</span>`;
           }
           return;
         }
@@ -251,7 +258,7 @@
     });
   }
 
-  document.getElementById("tz").innerHTML = `Times shown in <b>${esc(tzName)}</b><br>Hover a deadline for its official time zone`;
+  document.getElementById("tz").innerHTML = `Times shown in <b>${esc(tzName)}</b><br>Tap or hover a deadline for its official time zone`;
   const gen = new Date(DATA.generated);
   document.getElementById("footer").innerHTML =
     `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from CORE 2023.</span>
@@ -300,6 +307,7 @@
   document.addEventListener("focusout", () => { tipEl.hidden = true; });
 
   render();
+  narrowQuery.addEventListener("change", render);
   setInterval(tick, 30000);
   setInterval(render, 10 * 60000);
 })();
