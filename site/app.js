@@ -79,9 +79,7 @@
     const today = new Date(now); today.setHours(0, 0, 0, 0);
     // two weeks of lead-in keep today's deadlines off the chart edge
     const START = today.getTime() - 14 * DAY;
-    // phones show 9 months ahead so markers have room; desktop shows 12
-    const months = narrowQuery.matches ? 9 : 12;
-    const END = new Date(today.getFullYear(), today.getMonth() + months, today.getDate()).getTime();
+    const END = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).getTime();
     const pct = ms => ((ms - START) / (END - START)) * 100;
     const nowX = pct(now);
     // nothing is drawn before today: bands that started earlier begin at the today line
@@ -147,7 +145,7 @@
         <div class="track">${marks}</div></div>`;
     }).join("");
 
-    return `<div class="tl-scroll"><div class="tl">
+    return `<p class="swipe-hint">Swipe the timeline sideways to see later months.</p><div class="tl-scroll"><div class="tl">
       <div class="tl-head"><div></div><div class="axis">${head}</div></div>${body}
       <div class="grid">${grid}</div></div></div>`;
   }
