@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- Source of site/og.png, the link preview image. Regenerate with:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+       --window-size=1200,630 --virtual-time-budget=5000 --screenshot=site/og.png "file://$PWD/site/og/og.html" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #0E1216; color: #E5E9EE; font-family: "IBM Plex Sans", sans-serif; position: relative; }
+  .text { position: absolute; left: 84px; top: 70px; width: 1040px; }
+  .eyebrow { font: 600 19px "IBM Plex Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: #3DB5BF; }
+  h1 { font: 800 132px/1 "Schibsted Grotesk", sans-serif; letter-spacing: -.035em; margin-top: 26px; }
+  h1 span { color: #3DB5BF; }
+  p { font-size: 30px; line-height: 1.35; color: #AEB7C3; margin-top: 26px; max-width: 900px; }
+
+  .chart { position: absolute; left: 84px; right: 84px; bottom: 104px; height: 148px; }
+  .row { position: absolute; left: 0; right: 0; height: 22px; }
+  .bar, .reb, .conf, .dia, .dot { position: absolute; top: 50%; }
+  .bar { height: 10px; margin-top: -5px; background: #34404D; border-radius: 2px; }
+  .reb { height: 6px; margin-top: -3px; background: #E0A43F; border-radius: 2px; }
+  .conf { width: 18px; height: 18px; margin-top: -9px; background: #E5E9EE; border-radius: 2px; }
+  .dia { width: 16px; height: 16px; margin: -8px 0 0 -8px; transform: rotate(45deg); background: #3DB5BF; box-shadow: 0 0 0 3px #0E1216; }
+  .dia.hollow { background: #0E1216; border: 3px solid #3DB5BF; }
+  .dot { width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #5DB36D; box-shadow: 0 0 0 3px #0E1216; }
+  .today { position: absolute; top: -18px; bottom: -6px; left: 6%; width: 3px; background: #EE6A5B; }
+  .today::before { content: "today"; position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font: 600 16px "IBM Plex Mono", monospace; color: #EE6A5B; }
+  .url { position: absolute; right: 84px; bottom: 40px; font: 500 18px "IBM Plex Mono", monospace; color: #6B7582; }
+</style>
+</head>
+<body>
+  <div class="url">ambress92.github.io/ml-deadlines</div>
+  <div class="text">
+    <div class="eyebrow">A* / A conferences · ML · AI · NLP · Vision · Data</div>
+    <h1>ML <span>Deadlines</span></h1>
+    <p>Every deadline, review phase and venue on one timeline.</p>
+  </div>
+
+  <div class="chart">
+    <div class="today"></div>
+    <div class="row" style="top:0">
+      <span class="bar" style="left:7%;width:24%"></span><span class="reb" style="left:15%;width:6%"></span>
+      <span class="dia hollow" style="left:7%"></span><span class="dia" style="left:9%"></span><span class="dot" style="left:31%"></span>
+      <span class="conf" style="left:62%"></span>
+    </div>
+    <div class="row" style="top:42px">
+      <span class="bar" style="left:14%;width:30%"></span><span class="reb" style="left:31%;width:5%"></span>
+      <span class="dia" style="left:14%"></span><span class="dot" style="left:44%"></span>
+      <span class="conf" style="left:80%"></span>
+    </div>
+    <div class="row" style="top:84px">
+      <span class="bar" style="left:25%;width:27%"></span><span class="reb" style="left:40%;width:4%"></span>
+      <span class="dia hollow" style="left:25%"></span><span class="dia" style="left:27%"></span><span class="dot" style="left:52%"></span>
+      <span class="conf" style="left:72%"></span>
+    </div>
+    <div class="row" style="top:126px">
+      <span class="bar" style="left:38%;width:26%"></span><span class="reb" style="left:52%;width:6%"></span>
+      <span class="dia" style="left:38%"></span><span class="dot" style="left:64%"></span>
+      <span class="conf" style="left:93%"></span>
+    </div>
+  </div>
+</body>
+</html>

@@ -173,7 +173,7 @@ def build(now: dt.datetime) -> int:
         tag = hashlib.sha1((SITE_DIR / asset).read_bytes()).hexdigest()[:8]
         page = page.replace(f'"{asset}"', f'"{asset}?v={tag}"')
     (DIST / "index.html").write_text(page)
-    for asset in ("style.css", "app.js", "favicon.svg"):
+    for asset in ("style.css", "app.js", "favicon.svg", "og.png"):
         shutil.copy(SITE_DIR / asset, DIST / asset)
     (DIST / ".nojekyll").write_text("")
 

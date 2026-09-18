@@ -9,7 +9,7 @@ A static website listing deadlines, dates and locations of 26 A*/A conferences (
 - `scripts/build.py`: validates and builds `dist/` (page, `data.json`, `.ics` calendars). Use `--check` to validate only and `--serve` for a local preview.
 - `scripts/check_updates.py`: fetches the official pages and reports what changed. It never edits data.
 - `scripts/new_venue.py`: creates a template file for a new venue.
-- `site/`: page template, `app.js`, `style.css`.
+- `site/`: page template, `app.js`, `style.css`. `site/og.png` is the link preview image; its source and the command to regenerate it are in `site/og/og.html`.
 - Use the venv: `.venv/bin/python scripts/...` (it only needs PyYAML).
 
 ## Data rules
