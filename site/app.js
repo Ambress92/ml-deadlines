@@ -96,9 +96,9 @@
       });
   }
 
-  // main countdown (next event of any kind) and, when that is not the next submission, a second line for it
+  // countdown to the next event of any kind
   function countdowns(r, now) {
-    const {next, moment, ed} = r;
+    const {moment, ed} = r;
     let html;
     if (moment) {
       const label = momentLabel(moment, ed.year), ms = moment.t - now;
@@ -106,10 +106,6 @@
       html = `<span class="cd ${cls}" data-cd="${moment.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(ms)}</span>`;
     } else {
       html = `<span class="cd">No dates announced</span>`;
-    }
-    if (next && (!moment || moment.e !== next)) {
-      const label = `next: ${next.edition !== ed.year ? next.edition + " " : ""}${phaseName(next).toLowerCase()}`;
-      html += `<span class="cd2" data-cd="${next.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(next.t - now)}</span>`;
     }
     return html;
   }
