@@ -14,12 +14,13 @@
   // phones get a stacked timeline that fits all 12 months on screen (see style.css)
   const narrowQuery = window.matchMedia("(max-width: 640px)");
 
-  let state = {view: "timeline", area: "all", showEst: true};
+  let state = {view: "timeline", area: "all", showEst: true, sort: "deadline"};
   try {
     const saved = JSON.parse(localStorage.getItem("mld-state") || "{}");
     if (saved.view === "list" || saved.view === "timeline") state.view = saved.view;
     if (AREAS.some(a => a[0] === saved.area)) state.area = saved.area;
     if (typeof saved.showEst === "boolean") state.showEst = saved.showEst;
+    if (saved.sort === "deadline" || saved.sort === "conference") state.sort = saved.sort;
   } catch (e) {}
   function save() { try { localStorage.setItem("mld-state", JSON.stringify(state)); } catch (e) {} }
 
@@ -35,6 +36,7 @@
   function countdown(ms) {
     if (ms <= 0) return "passed";
     const d = Math.floor(ms / DAY), h = Math.floor(ms % DAY / 36e5), m = Math.floor(ms % 36e5 / 6e4);
+    if (d >= 10) return `${d}d`;
     return d >= 1 ? `${d}d ${String(h).padStart(2, "0")}h` : `${h}h ${String(m).padStart(2, "0")}m`;
   }
   const urgency = ms => ms < 7 * DAY ? "urgent" : ms < 30 * DAY ? "soon" : "";
@@ -43,6 +45,27 @@
     return SUBMISSION.has(e.type) ? `${e.round} ${LABEL[e.type].toLowerCase()}` : `${LABEL[e.type]} (${e.round})`;
   }
   const evEnd = e => e.t ?? endOfDay(e.end);
+  const startOfDay = iso => new Date(iso + "T00:00:00").getTime();
+  // phases the author has to act on; only these get warning colours
+  const ACTIONABLE = new Set(["abstract", "paper", "rebuttal", "commitment", "camera_ready"]);
+
+  // the next moment anything happens: a deadline, or the start (or end, if running) of a range
+  function nextMoment(events, now) {
+    let best = null;
+    for (const e of events) {
+      let t = null, ends = false;
+      if (e.t != null) { if (e.t > now) t = e.t; }
+      else if (startOfDay(e.start) > now) t = startOfDay(e.start);
+      else if (endOfDay(e.end) > now) { t = endOfDay(e.end); ends = true; }
+      if (t != null && (!best || t < best.t)) best = {e, t, ends};
+    }
+    return best;
+  }
+  function momentLabel(m, year) {
+    let name = phaseName(m.e);
+    if (m.e.edition !== year) name = `${m.e.edition} ${name.toLowerCase()}`;
+    return name + (m.ends ? " ends" : "");
+  }
   const tip = text => `data-tip="${esc(text)}" tabindex="0"`;
 
   // ---------------------------------------------------------------- model
@@ -54,20 +77,46 @@
       .map(v => {
         const events = v.events.filter(e => state.showEst || !e.estimated);
         const next = events.filter(e => SUBMISSION.has(e.type) && e.t > now).sort((a, b) => a.t - b.t)[0] || null;
-        let year = next && next.edition;
+        const moment = nextMoment(events, now);
+        const conf = events.filter(e => e.type === "conference" && endOfDay(e.end) > now)
+          .sort((a, b) => startOfDay(a.start) - startOfDay(b.start))[0] || null;
+        let year = state.sort === "conference" && conf ? conf.edition : next && next.edition;
         if (!year) {
           const upcoming = v.editions.filter(e => e.end && endOfDay(e.end) > now && (state.showEst || !e.estimated));
           year = upcoming.length ? upcoming[0].year : v.editions[v.editions.length - 1].year;
         }
         const ed = v.editions.find(e => e.year === year);
-        return {v, events, next, ed};
+        return {v, events, next, moment, conf, ed};
       })
-      .sort((a, b) => ((a.next ? a.next.t : Infinity) - (b.next ? b.next.t : Infinity)) || a.v.name.localeCompare(b.v.name));
+      .sort((a, b) => {
+        const key = r => state.sort === "conference"
+          ? (r.conf ? startOfDay(r.conf.start) : Infinity)
+          : (r.next ? r.next.t : Infinity);
+        return (key(a) - key(b)) || a.v.name.localeCompare(b.v.name);
+      });
+  }
+
+  // main countdown (next event of any kind) and, when that is not the next submission, a second line for it
+  function countdowns(r, now) {
+    const {next, moment, ed} = r;
+    let html;
+    if (moment) {
+      const label = momentLabel(moment, ed.year), ms = moment.t - now;
+      const cls = ACTIONABLE.has(moment.e.type) && !moment.ends ? urgency(ms) : "";
+      html = `<span class="cd ${cls}" data-cd="${moment.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(ms)}</span>`;
+    } else {
+      html = `<span class="cd">No dates announced</span>`;
+    }
+    if (next && (!moment || moment.e !== next)) {
+      const label = `next: ${next.edition !== ed.year ? next.edition + " " : ""}${phaseName(next).toLowerCase()}`;
+      html += `<span class="cd2" data-cd="${next.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(next.t - now)}</span>`;
+    }
+    return html;
   }
 
   function nameCell(r) {
     const {v, ed, next} = r;
-    const est = next ? next.estimated : ed.estimated;
+    const est = state.sort === "conference" || !next ? ed.estimated : next.estimated;
     return `<div class="vn"><a href="${esc(ed.url || v.url)}" target="_blank" rel="noopener" title="${esc(v.full_name)}">${esc(v.name)}</a>`
       + `<span class="ed">${ed.year}</span><span class="rank" title="CORE 2023 rank">${esc(v.rank)}</span>`
       + (est ? `<span class="est-tag" title="Dates estimated from last year's; not announced yet">est.</span>` : "") + `</div>`;
@@ -137,10 +186,7 @@
         const when = SUBMISSION.has(e.type) ? `${localFmt.format(new Date(e.t))} your time\n${e.when}` : e.when;
         marks += `<span class="mk ${shape}${cls(e)}" style="left:${x}%" ${tip(`${phaseName(e)}${e.estimated ? " (estimated)" : ""}\n${when}${e.note ? "\n" + e.note : ""}`)}></span>`;
       });
-      const ms = next ? next.t - now : 0;
-      const cd = next
-        ? `<span class="cd ${urgency(ms)}" data-cd="${next.t}" data-prefix="${esc(phaseName(next))} in ">${esc(phaseName(next))} in ${countdown(ms)}</span>`
-        : `<span class="cd">No deadline announced</span>`;
+      const cd = countdowns(r, now);
       return `<div class="trow"><div class="tname"><div class="row1">${nameCell(r)}${subButton(v, true)}</div>${cd}</div>
         <div class="track">${marks}</div></div>`;
     }).join("");
@@ -152,10 +198,16 @@
 
   // ----------------------------------------------------------------- list
 
+  function bigCountdown(r, now) {
+    const m = r.moment;
+    if (!m) return `<div class="big"><span>–</span><small>no dates announced</small></div>`;
+    const ms = m.t - now, cls = ACTIONABLE.has(m.e.type) && !m.ends ? urgency(ms) : "";
+    return `<div class="big ${cls}"><span data-cd="${m.t}">${countdown(ms)}</span><small>until ${esc(momentLabel(m, r.ed.year).toLowerCase())}</small></div>`;
+  }
+
   function renderList(list, now) {
     return `<div class="list">` + list.map(r => {
       const {v, events, next, ed} = r;
-      const ms = next ? next.t - now : 0;
       // rounds whose every date has passed are hidden to keep multi-round venues short
       const live = new Set(events.filter(e => e.edition === ed.year && evEnd(e) >= now).map(e => e.round));
       const chips = events.filter(e => e.edition === ed.year && e.type !== "conference" && live.has(e.round))
@@ -174,7 +226,7 @@
       if (ed.notes) src += " " + esc(ed.notes);
       if (next && next.note) src += " " + esc(next.note);
       return `<div class="lrow${next && next.estimated ? " est" : ""}">
-        <div class="big ${next ? urgency(ms) : ""}"><span data-cd="${next ? next.t : ""}">${next ? countdown(ms) : "–"}</span><small>${next ? "until " + esc(phaseName(next).toLowerCase()) : "no deadline announced"}</small></div>
+        ${bigCountdown(r, now)}
         <div>${nameCell(r)}<div class="meta">${esc(v.area_label)} · ${esc(conf)} · ${esc(ed.location || "location TBA")}</div></div>
         <div class="nextdl">${next ? `<b>${esc(phaseName(next))}</b> <span class="when">${localFmt.format(new Date(next.t))}</span><div class="aoe">${esc(next.when)}</div>` : ""}</div>
         <div class="phases">${chips}</div>
@@ -239,7 +291,8 @@
 
   function render() {
     const now = Date.now();
-    document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
+    document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
+    document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sort === state.sort));
     document.getElementById("chips").innerHTML = AREAS.map(([k, l]) =>
       `<button class="chip" id="area-${k}" data-area="${k}" aria-pressed="${state.area === k}">${l}</button>`).join("");
     document.getElementById("show-est").checked = state.showEst;
@@ -283,6 +336,8 @@
     if (!e.target.closest("#menu")) closeMenu();
     const vb = e.target.closest("[data-view]");
     if (vb) { state.view = vb.dataset.view; save(); render(); return; }
+    const sb = e.target.closest("[data-sort]");
+    if (sb) { state.sort = sb.dataset.sort; save(); render(); return; }
     const ab = e.target.closest("[data-area]");
     if (ab) { state.area = ab.dataset.area; save(); render(); }
   });
