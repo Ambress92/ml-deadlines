@@ -71,6 +71,43 @@ def to_json(venues: list[dict], now: dt.datetime) -> dict:
     return {"generated": now.isoformat(timespec="minutes"), "repo": REPO_URL, "venues": out}
 
 
+# ----------------------------------------------------------- static text
+
+def _fmt_range(start: dt.date, end: dt.date) -> str:
+    if start.month == end.month:
+        return f"{start:%b} {start.day}–{end.day}, {end.year}"
+    return f"{start:%b} {start.day} – {end:%b} {end.day}, {end.year}"
+
+
+def static_html(venues: list[dict], now: dt.datetime) -> str:
+    """A plain list of the same data, rendered into the page at build time.
+    Search engines and readers without JavaScript see it; app.js replaces it."""
+    rows = []
+    for v in venues:
+        subs = sorted((e for e in v["events"] if e["type"] in ("abstract", "paper") and e["at"] > now),
+                      key=lambda e: e["at"])
+        conf = next((e for e in sorted((e for e in v["events"] if e["type"] == "conference"),
+                                       key=lambda e: e["start"]) if e["end"] >= now.date()), None)
+        parts = []
+        for e in subs[:2]:
+            label = f"{e['round']} {PHASE_LABELS[e['type']].lower()}" if e["round"] else PHASE_LABELS[e["type"]].lower()
+            est = " (estimated)" if e["estimated"] else ""
+            parts.append(f"{label} {e['at']:%b} {e['at'].day}, {e['at'].year} {e['tz']}{est}")
+        if v["rolling"]:
+            parts.append(v["rolling"]["label"].lower())
+        if conf:
+            where = f", {conf['location']}" if conf["location"] else ""
+            parts.append(f"conference {_fmt_range(conf['start'], conf['end'])}{where}")
+        year = subs[0]["edition"] if subs else (conf["edition"] if conf else v["editions"][-1]["year"])
+        rows.append((subs[0]["at"] if subs else now + dt.timedelta(days=4000),
+                     f"<li><a href=\"{v['url']}\">{v['name']} {year}</a> ({v['rank']}, {v['area_label']}): "
+                     f"{'; '.join(parts) or 'dates not announced'}.</li>"))
+    items = "\n".join(html for _, html in sorted(rows, key=lambda r: r[0]))
+    return ('<noscript><p>This page uses JavaScript for the timeline and the countdowns. '
+            'The dates below are the same data.</p></noscript>\n'
+            f'<ul class="static-list">\n{items}\n</ul>')
+
+
 # -------------------------------------------------------------------- ics
 
 def _esc(text: str) -> str:
@@ -170,6 +207,7 @@ def build(now: dt.datetime) -> int:
     page = (SITE_DIR / "index.html").read_text()
     blob = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     page = page.replace("/*__DATA__*/null", blob)
+    page = page.replace('<main id="view"></main>', f'<main id="view">\n{static_html(venues, now)}\n</main>')
     # version tags make browsers fetch changed assets instead of a cached copy
     for asset in ("style.css", "app.js"):
         tag = hashlib.sha1((SITE_DIR / asset).read_bytes()).hexdigest()[:8]
