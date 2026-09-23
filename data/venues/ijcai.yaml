@@ -20,7 +20,7 @@ editions:
         camera_ready: 2026-05-20
   - year: 2027
     source: https://www.ijcai.org/future_conferences
-    last_verified: 2026-09-18
+    last_verified: 2026-09-23
     location:
       - {city: Kyoto, country: Japan}
       - {city: Hengqin, country: China}

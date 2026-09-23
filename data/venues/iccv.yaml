@@ -19,8 +19,9 @@ editions:
         notification: 2025-06-25
         note: Rebuttals were due May 16, 2025.
   - year: 2027
-    source: https://www.thecvf.com/?p=137
-    last_verified: 2026-09-18
+    url: https://iccv.thecvf.com/Conferences/2027
+    source: https://iccv.thecvf.com/Conferences/2027
+    last_verified: 2026-09-23
     location: {city: Hong Kong, country: China}
     start: 2027-10-02
     end: 2027-10-08
