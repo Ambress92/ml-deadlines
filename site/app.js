@@ -314,7 +314,8 @@
      <span>Visits are counted anonymously with <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a>: no cookies, no personal data stored.</span>
      <a href="${esc(DATA.repo)}/issues/new?template=update-dates.yml" target="_blank" rel="noopener">Report a wrong date</a>
      <a href="${esc(DATA.repo)}/issues/new?template=add-conference.yml" target="_blank" rel="noopener">Suggest a conference</a>
-     <a href="${esc(DATA.repo)}" target="_blank" rel="noopener">Source on GitHub</a>`;
+     <a href="${esc(DATA.repo)}" target="_blank" rel="noopener">Source on GitHub</a>
+     <span>Built by <a href="https://scholar.google.com/citations?user=v-tnmbwAAAAJ" target="_blank" rel="noopener">Antonio Ferrara</a></span>`;
 
   document.addEventListener("click", e => {
     // calendar subscriptions are counted as GoatCounter events, e.g. "calendar/iclr/google"
