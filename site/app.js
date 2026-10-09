@@ -1,8 +1,12 @@
 // Renders the timeline and list views from the data embedded by scripts/build.py.
 (function () {
   const DATA = window.__DATA__;
-  const AREAS = [["all", "All"], ["ml", "Core ML"], ["ai", "General AI"], ["cv", "Vision"],
+  const AREAS = [["all", "All areas"], ["ml", "Core ML"], ["ai", "General AI"], ["cv", "Vision"],
                  ["nlp", "NLP"], ["dm", "Data mining & IR"], ["db", "Databases"]];
+  const SORTS = ["submission", "rebuttal", "decision", "conference"];
+  // shown under a venue's name when nothing is coming up for the chosen order
+  const NONE = {submission: "No dates announced", rebuttal: "No upcoming rebuttal",
+                decision: "No upcoming decision", conference: "No dates announced"};
   const LABEL = {abstract: "Abstract", paper: "Paper", rebuttal: "Rebuttal", commitment: "Commitment", notification: "Notification",
                  camera_ready: "Camera-ready", conference: "Conference"};
   const SUBMISSION = new Set(["abstract", "paper"]);
@@ -14,15 +18,20 @@
   // phones get a stacked timeline that fits all 12 months on screen (see style.css)
   const narrowQuery = window.matchMedia("(max-width: 640px)");
 
-  let state = {view: "timeline", area: "all", showEst: true, sort: "deadline"};
+  // the search text (q) is not remembered between visits; everything else is
+  let state = {view: "timeline", area: "all", showEst: true, sort: "submission", q: ""};
   try {
     const saved = JSON.parse(localStorage.getItem("mld-state") || "{}");
     if (saved.view === "list" || saved.view === "timeline") state.view = saved.view;
     if (AREAS.some(a => a[0] === saved.area)) state.area = saved.area;
     if (typeof saved.showEst === "boolean") state.showEst = saved.showEst;
-    if (saved.sort === "deadline" || saved.sort === "conference") state.sort = saved.sort;
+    if (saved.sort === "deadline") state.sort = "submission";  // the name before the sort menu existed
+    else if (SORTS.includes(saved.sort)) state.sort = saved.sort;
   } catch (e) {}
-  function save() { try { localStorage.setItem("mld-state", JSON.stringify(state)); } catch (e) {} }
+  function save() {
+    const {q, ...kept} = state;
+    try { localStorage.setItem("mld-state", JSON.stringify(kept)); } catch (e) {}
+  }
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   const day = iso => new Date(iso + "T12:00:00");
@@ -63,56 +72,80 @@
   }
   function momentLabel(m, year) {
     let name = phaseName(m.e);
+    // when sorting by decision, notifications are called decisions, as in the sort menu
+    if (state.sort === "decision" && m.e.type === "notification") name = name.replace("Notification", "Decision");
     if (m.e.edition !== year) name = `${m.e.edition} ${name.toLowerCase()}`;
     return name + (m.ends ? " ends" : "");
   }
   const tip = text => `data-tip="${esc(text)}" tabindex="0"`;
 
+  // search ignores case and accents, so "montreal" finds Montréal
+  const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const HAY = new Map(DATA.venues.map(v => [v.id, norm([v.name, v.full_name, ...v.editions.map(e => e.location)].join(" "))]));
+  function shown(v) {
+    const q = norm(state.q);
+    // a search covers every area: the remembered area filter would otherwise hide what was asked for
+    if (q) return q.split(/\s+/).every(w => HAY.get(v.id).includes(w));
+    return state.area === "all" || v.area === state.area;
+  }
+
   // ---------------------------------------------------------------- model
+
+  // position in the chosen order: a deadline's time, or a range's start; a range already under way
+  // (a running rebuttal or conference) comes first, soonest to end first
+  function orderKey(r, now) {
+    const e = r.key;
+    if (!e) return Infinity;
+    if (e.t != null) return e.t;
+    const s = startOfDay(e.start);
+    return s > now ? s : endOfDay(e.end) - 1e13;
+  }
 
   function rows(now) {
     return DATA.venues
-      .filter(v => !v.rolling)
-      .filter(v => state.area === "all" || v.area === state.area)
+      .filter(v => !v.rolling && shown(v))
       .map(v => {
         const events = v.events.filter(e => state.showEst || !e.estimated);
-        const next = events.filter(e => SUBMISSION.has(e.type) && e.t > now).sort((a, b) => a.t - b.t)[0] || null;
-        const moment = nextMoment(events, now);
-        const conf = events.filter(e => e.type === "conference" && endOfDay(e.end) > now)
-          .sort((a, b) => startOfDay(a.start) - startOfDay(b.start))[0] || null;
-        let year = state.sort === "conference" && conf ? conf.edition : next && next.edition;
+        const first = list => list.sort((a, b) => (a.t ?? startOfDay(a.start)) - (b.t ?? startOfDay(b.start)))[0] || null;
+        const next = first(events.filter(e => SUBMISSION.has(e.type) && e.t > now));
+        const reb = first(events.filter(e => e.type === "rebuttal" && endOfDay(e.end) > now));
+        const dec = first(events.filter(e => e.type === "notification" && e.t > now));
+        const conf = first(events.filter(e => e.type === "conference" && endOfDay(e.end) > now));
+        // the event the chosen order is based on
+        const key = {submission: next, rebuttal: reb, decision: dec, conference: conf}[state.sort];
+        // sorted by rebuttal or decision, the countdown shows that phase; otherwise the next event of any kind
+        let moment;
+        if (state.sort === "rebuttal") {
+          moment = reb && (startOfDay(reb.start) > now ? {e: reb, t: startOfDay(reb.start), ends: false}
+                                                       : {e: reb, t: endOfDay(reb.end), ends: true});
+        } else if (state.sort === "decision") {
+          moment = dec && {e: dec, t: dec.t, ends: false};
+        } else {
+          moment = nextMoment(events, now);
+        }
+        let year = key && key.edition;
         if (!year) {
           const upcoming = v.editions.filter(e => e.end && endOfDay(e.end) > now && (state.showEst || !e.estimated));
           year = upcoming.length ? upcoming[0].year : v.editions[v.editions.length - 1].year;
         }
         const ed = v.editions.find(e => e.year === year);
-        return {v, events, next, moment, conf, ed};
+        const est = key ? key.estimated : ed.estimated;
+        return {v, events, next, key, moment, ed, est};
       })
-      .sort((a, b) => {
-        const key = r => state.sort === "conference"
-          ? (r.conf ? startOfDay(r.conf.start) : Infinity)
-          : (r.next ? r.next.t : Infinity);
-        return (key(a) - key(b)) || a.v.name.localeCompare(b.v.name);
-      });
+      .sort((a, b) => (orderKey(a, now) - orderKey(b, now)) || a.v.name.localeCompare(b.v.name));
   }
 
-  // countdown to the next event of any kind
+  // the countdown under each name (rows() decides what it counts down to)
   function countdowns(r, now) {
     const {moment, ed} = r;
-    let html;
-    if (moment) {
-      const label = momentLabel(moment, ed.year), ms = moment.t - now;
-      const cls = ACTIONABLE.has(moment.e.type) && !moment.ends ? urgency(ms) : "";
-      html = `<span class="cd ${cls}" data-cd="${moment.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(ms)}</span>`;
-    } else {
-      html = `<span class="cd">No dates announced</span>`;
-    }
-    return html;
+    if (!moment) return `<span class="cd">${NONE[state.sort]}</span>`;
+    const label = momentLabel(moment, ed.year), ms = moment.t - now;
+    const cls = ACTIONABLE.has(moment.e.type) && !moment.ends ? urgency(ms) : "";
+    return `<span class="cd ${cls}" data-cd="${moment.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(ms)}</span>`;
   }
 
   function nameCell(r) {
-    const {v, ed, next} = r;
-    const est = state.sort === "conference" || !next ? ed.estimated : next.estimated;
+    const {v, ed, est} = r;
     return `<div class="vn"><a href="${esc(ed.url || v.url)}" target="_blank" rel="noopener" title="${esc(v.full_name)}">${esc(v.name)}</a>`
       + `<span class="ed">${ed.year}</span>`
       + (v.rank === "unranked" ? "" : `<span class="rank" title="CORE 2023 rank">${esc(v.rank)}</span>`)
@@ -197,7 +230,7 @@
 
   function bigCountdown(r, now) {
     const m = r.moment;
-    if (!m) return `<div class="big"><span>–</span><small>no dates announced</small></div>`;
+    if (!m) return `<div class="big"><span>–</span><small>${NONE[state.sort].toLowerCase()}</small></div>`;
     const ms = m.t - now, cls = ACTIONABLE.has(m.e.type) && !m.ends ? urgency(ms) : "";
     return `<div class="big ${cls}"><span data-cd="${m.t}">${countdown(ms)}</span><small>until ${esc(momentLabel(m, r.ed.year).toLowerCase())}</small></div>`;
   }
@@ -205,6 +238,8 @@
   function renderList(list, now) {
     return `<div class="list">` + list.map(r => {
       const {v, events, next, ed} = r;
+      // the highlighted date is the one the countdown shows: the rebuttal or decision when sorted by it
+      const hl = state.sort === "rebuttal" || state.sort === "decision" ? r.key : next;
       // rounds whose every date has passed are hidden to keep multi-round venues short
       const live = new Set(events.filter(e => e.edition === ed.year && evEnd(e) >= now).map(e => e.round));
       const chips = events.filter(e => e.edition === ed.year && e.type !== "conference" && live.has(e.round))
@@ -212,7 +247,7 @@
         // deadlines in the visitor's time zone (official time on hover); ranges keep the venue's dates
         const when = e.start ? rangeText(e.start, e.end) : dayFmt.format(new Date(e.t));
         const title = e.t ? ` title="${esc(`${localFmt.format(new Date(e.t))} your time · ${e.when}`)}"` : "";
-        return `<span class="ph${evEnd(e) < now ? " done" : ""}${next === e ? " is-next" : ""}"${title}>${esc(phaseName(e))} ${esc(when)}</span>`;
+        return `<span class="ph${evEnd(e) < now ? " done" : ""}${hl === e ? " is-next" : ""}"${title}>${esc(phaseName(e))} ${esc(when)}</span>`;
       }).join("");
       const conf = ed.start ? rangeText(ed.start, ed.end) : "dates TBA";
       const estFrom = ed.based_on || ed.year - 1;
@@ -222,7 +257,7 @@
       if (!ed.estimated && events.some(e => e.edition === ed.year && e.estimated)) src += ` Dates marked est. are estimated from ${estFrom}.`;
       if (ed.notes) src += " " + esc(ed.notes);
       if (next && next.note) src += " " + esc(next.note);
-      return `<div class="lrow${next && next.estimated ? " est" : ""}">
+      return `<div class="lrow${r.est ? " est" : ""}">
         ${bigCountdown(r, now)}
         <div>${nameCell(r)}<div class="meta">${esc(v.area_label)} · ${esc(conf)} · ${esc(ed.location || "location TBA")}</div></div>
         <div class="nextdl">${next ? `<b>${esc(phaseName(next))}</b> <span class="when">${localFmt.format(new Date(next.t))}</span><div class="aoe">${esc(next.when)}</div>` : ""}</div>
@@ -236,7 +271,7 @@
 
   function renderRolling(now) {
     const el = document.getElementById("rolling");
-    const items = DATA.venues.filter(v => v.rolling && (state.area === "all" || v.area === state.area));
+    const items = DATA.venues.filter(v => v.rolling && shown(v));
     el.hidden = !items.length;
     el.innerHTML = `<span class="lbl">Rolling submissions</span>` + items.map(v => {
       const r = v.rolling, dates = r.dates.filter(t => t > now);
@@ -289,15 +324,23 @@
   function render() {
     const now = Date.now();
     document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
-    document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sort === state.sort));
-    document.getElementById("chips").innerHTML = AREAS.map(([k, l]) =>
-      `<button class="chip" id="area-${k}" data-area="${k}" aria-pressed="${state.area === k}">${l}</button>`).join("");
+    document.getElementById("sort").value = state.sort;
+    document.getElementById("area").value = state.area;
+    const searching = !!norm(state.q);
+    // the area menu is dimmed while a search runs, since the search covers all areas
+    document.getElementById("area-pick").classList.toggle("off", searching);
     document.getElementById("show-est").checked = state.showEst;
     renderRolling(now);
     const list = rows(now);
+    let empty = "No venues in this area.";
+    if (searching) {
+      const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
+      empty = rolling.length ? `${esc(rolling.join(", "))} takes submissions on a rolling basis, shown below.`
+                             : `No conference matches “${esc(state.q.trim())}”.`;
+    }
     document.getElementById("view").innerHTML = list.length
       ? (state.view === "timeline" ? renderTimeline(list, now) : renderList(list, now))
-      : `<div class="list empty">No venues in this area.</div>`;
+      : `<div class="list empty">${empty}</div>`;
     document.getElementById("legend").hidden = state.view !== "timeline";
   }
 
@@ -333,14 +376,25 @@
     if (sub) { openMenu(sub); return; }
     if (!e.target.closest("#menu")) closeMenu();
     const vb = e.target.closest("[data-view]");
-    if (vb) { state.view = vb.dataset.view; save(); render(); return; }
-    const sb = e.target.closest("[data-sort]");
-    if (sb) { state.sort = sb.dataset.sort; save(); render(); return; }
-    const ab = e.target.closest("[data-area]");
-    if (ab) { state.area = ab.dataset.area; save(); render(); }
+    if (vb) { state.view = vb.dataset.view; save(); render(); }
   });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+  document.getElementById("area").innerHTML = AREAS.map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("");
+  document.getElementById("sort").addEventListener("change", e => { state.sort = e.target.value; save(); render(); });
+  document.getElementById("area").addEventListener("change", e => { state.area = e.target.value; save(); render(); });
   document.getElementById("show-est").addEventListener("change", e => { state.showEst = e.target.checked; save(); render(); });
+  const qEl = document.getElementById("q");
+  const setQuery = text => { state.q = text; render(); };
+  qEl.addEventListener("input", () => setQuery(qEl.value));
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      closeMenu();
+      if (document.activeElement === qEl && qEl.value) { qEl.value = ""; setQuery(""); }
+    }
+    // "/" jumps to the search box, unless the visitor is already typing somewhere
+    if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      e.preventDefault(); qEl.focus();
+    }
+  });
 
   const tipEl = document.getElementById("tip");
   function showTip(el, x, y) {

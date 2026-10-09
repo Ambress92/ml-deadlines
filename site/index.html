@@ -40,11 +40,17 @@
       <button id="v-timeline" data-view="timeline" aria-pressed="true">Timeline</button>
       <button id="v-list" data-view="list" aria-pressed="false">List</button>
     </div>
-    <div class="seg" role="group" aria-label="Sort by">
-      <button id="s-deadline" data-sort="deadline" aria-pressed="true">Deadline</button>
-      <button id="s-conference" data-sort="conference" aria-pressed="false">Conference</button>
-    </div>
-    <div class="chips" id="chips" role="group" aria-label="Area"></div>
+    <label class="pick"><span class="sr">Sort by</span><select id="sort">
+      <option value="submission">Next submission</option>
+      <option value="rebuttal">Next rebuttal</option>
+      <option value="decision">Next decision</option>
+      <option value="conference">Next conference</option>
+    </select></label>
+    <label class="pick" id="area-pick"><span class="sr">Area</span><select id="area"></select></label>
+    <label class="search"><span class="sr">Search conferences</span>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+      <input type="search" id="q" placeholder="Search conference or city" autocomplete="off" spellcheck="false" enterkeyhint="search">
+    </label>
     <label class="check"><input type="checkbox" id="show-est" checked> Show estimated dates</label>
   </div>
 
