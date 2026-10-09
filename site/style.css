@@ -32,7 +32,7 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
 .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 64px; display:flex; flex-direction:column; gap:22px}
 header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 24px}
 h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-.02em; margin:0; line-height:1.1}
-.sub{color:var(--muted); margin:4px 0 0; max-width:62ch}
+.sub{color:var(--muted); margin:4px 0 0}
 .notice{font-size:13px; color:var(--muted); background:var(--surface-2); border-radius:6px; padding:8px 12px}
 .notice strong{color:var(--ink); font-weight:600}
 
