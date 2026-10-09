@@ -80,12 +80,27 @@
   const tip = text => `data-tip="${esc(text)}" tabindex="0"`;
 
   // search ignores case and accents, so "montreal" finds Montréal
-  const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-  const HAY = new Map(DATA.venues.map(v => [v.id, norm([v.name, v.full_name, ...v.editions.map(e => e.location)].join(" "))]));
+  const words = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .split(/[^a-z0-9]+/).filter(Boolean);
+  // what a search can match: the venue's names, its edition years, and the city and country of its
+  // editions that have not ended yet (a past edition's city would match a venue that is not going back there)
+  const loaded = Date.now();
+  const INDEX = new Map(DATA.venues.map(v => {
+    const places = v.editions.filter(e => !e.end || endOfDay(e.end) >= loaded).map(e => e.location || "");
+    if (places.some(p => /\bUSA\b/.test(p))) places.push("United States America");
+    return [v.id, {acronym: words(v.name).join(""),
+                   words: words([v.name, v.full_name, ...v.editions.map(e => e.year), ...places].join(" "))}];
+  }));
+  // every typed word must start a word of the venue ("us" finds USA but not "autonomous"),
+  // or appear anywhere in its acronym ("ml" finds ICML and ECML-PKDD)
+  function matches(v, query) {
+    const ix = INDEX.get(v.id);
+    return words(query).every(w => ix.acronym.includes(w) || ix.words.some(x => x.startsWith(w)));
+  }
+  const searching = () => words(state.q).length > 0;
   function shown(v) {
-    const q = norm(state.q);
     // a search covers every area: the remembered area filter would otherwise hide what was asked for
-    if (q) return q.split(/\s+/).every(w => HAY.get(v.id).includes(w));
+    if (searching()) return matches(v, state.q);
     return state.area === "all" || v.area === state.area;
   }
 
@@ -326,14 +341,13 @@
     document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
     document.getElementById("sort").value = state.sort;
     document.getElementById("area").value = state.area;
-    const searching = !!norm(state.q);
     // the area menu is dimmed while a search runs, since the search covers all areas
-    document.getElementById("area-pick").classList.toggle("off", searching);
+    document.getElementById("area-pick").classList.toggle("off", searching());
     document.getElementById("show-est").checked = state.showEst;
     renderRolling(now);
     const list = rows(now);
     let empty = "No venues in this area.";
-    if (searching) {
+    if (searching()) {
       const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
       empty = rolling.length ? `${esc(rolling.join(", "))} takes submissions on a rolling basis, shown below.`
                              : `No conference matches “${esc(state.q.trim())}”.`;
