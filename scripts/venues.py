@@ -26,7 +26,8 @@ AREAS = {
     "dm": "Data mining & IR",
     "db": "Databases",
 }
-RANKS = ("A*", "A")
+# "unranked": the venue is not in CORE 2023 at all (COLM was first held in 2024)
+RANKS = ("A*", "A", "unranked")
 FORMATS = ("in-person", "hybrid", "virtual")
 POINT_PHASES = ("abstract", "paper", "commitment", "notification", "camera_ready")
 SUBMISSION_PHASES = ("abstract", "paper")

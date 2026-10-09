@@ -6,7 +6,7 @@ Each file in `data/venues/` describes one conference series. The file name (with
 name: KDD                      # short name shown on the site
 full_name: ACM SIGKDD Conference on Knowledge Discovery and Data Mining
 area: dm                       # ml | ai | cv | nlp | dm | db
-rank: A*                       # CORE 2023: A* or A
+rank: A*                       # CORE 2023: A* or A; unranked if CORE 2023 does not list it (COLM)
 url: https://kdd.org           # the series' main site
 every_years: 1                 # 2 for biennial venues (ICCV, ECCV)
 irregular: false               # true if not held on a fixed cycle (NAACL): no next-edition estimate

@@ -49,7 +49,7 @@ def main() -> int:
     ap.add_argument("--name", required=True, help="short name shown on the site (e.g. ICRA)")
     ap.add_argument("--full-name", required=True)
     ap.add_argument("--area", required=True, choices=list(AREAS))
-    ap.add_argument("--rank", required=True, choices=list(RANKS), help="CORE 2023 rank")
+    ap.add_argument("--rank", required=True, choices=list(RANKS), help="CORE 2023 rank, or unranked if CORE 2023 does not list the venue")
     ap.add_argument("--url", required=True, help="the series' main website")
     ap.add_argument("--year", type=int, default=dt.date.today().year + 1, help="first edition to add")
     args = ap.parse_args()

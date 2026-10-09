@@ -19,9 +19,11 @@ Every date comes from the official conference website, which each entry links to
 | Core ML | NeurIPS, ICML, ICLR, AISTATS, UAI, COLT |
 | General AI | AAAI, IJCAI, ECAI, AAMAS |
 | Vision | CVPR, ICCV, ECCV |
-| NLP | ACL, EMNLP, NAACL |
+| NLP | ACL, EMNLP, NAACL, COLM |
 | Data mining & IR | KDD, ICDM, WSDM, SIGIR, WWW, CIKM, ECML-PKDD |
 | Databases | SIGMOD, ICDE, VLDB |
+
+COLM is listed although it has no CORE rank: it was first held in 2024, after the CORE 2023 ranking was made.
 
 ## Contributing
 
