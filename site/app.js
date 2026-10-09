@@ -365,10 +365,9 @@
     });
   }
 
-  document.getElementById("tz").innerHTML = `Times shown in <b>${esc(tzName)}</b><br>Tap or hover a deadline for its official time zone`;
   const gen = new Date(DATA.generated);
   document.getElementById("footer").innerHTML =
-    `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from CORE 2023.</span>
+    `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from CORE 2023. Times are in your time zone (${esc(tzName)}).</span>
      <span>Visits are counted anonymously with <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a>: no cookies, no personal data stored.</span>
      <a href="${esc(DATA.repo)}/issues/new?template=update-dates.yml" target="_blank" rel="noopener">Report a wrong date</a>
      <a href="${esc(DATA.repo)}/issues/new?template=add-conference.yml" target="_blank" rel="noopener">Suggest a conference</a>
