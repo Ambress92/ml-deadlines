@@ -99,8 +99,9 @@ def static_html(venues: list[dict], now: dt.datetime) -> str:
             where = f", {conf['location']}" if conf["location"] else ""
             parts.append(f"conference {_fmt_range(conf['start'], conf['end'])}{where}")
         year = subs[0]["edition"] if subs else (conf["edition"] if conf else v["editions"][-1]["year"])
+        rank = "" if v["rank"] == "unranked" else f"{v['rank']}, "
         rows.append((subs[0]["at"] if subs else now + dt.timedelta(days=4000),
-                     f"<li><a href=\"{v['url']}\">{v['name']} {year}</a> ({v['rank']}, {v['area_label']}): "
+                     f"<li><a href=\"{v['url']}\">{v['name']} {year}</a> ({rank}{v['area_label']}): "
                      f"{'; '.join(parts) or 'dates not announced'}.</li>"))
     items = "\n".join(html for _, html in sorted(rows, key=lambda r: r[0]))
     return ('<noscript><p>This page uses JavaScript for the timeline and the countdowns. '

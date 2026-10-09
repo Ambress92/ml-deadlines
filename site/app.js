@@ -114,7 +114,8 @@
     const {v, ed, next} = r;
     const est = state.sort === "conference" || !next ? ed.estimated : next.estimated;
     return `<div class="vn"><a href="${esc(ed.url || v.url)}" target="_blank" rel="noopener" title="${esc(v.full_name)}">${esc(v.name)}</a>`
-      + `<span class="ed">${ed.year}</span><span class="rank" title="${v.rank === "unranked" ? "Not ranked in CORE 2023" : "CORE 2023 rank"}">${esc(v.rank)}</span>`
+      + `<span class="ed">${ed.year}</span>`
+      + (v.rank === "unranked" ? "" : `<span class="rank" title="CORE 2023 rank">${esc(v.rank)}</span>`)
       + (est ? `<span class="est-tag" title="Dates estimated from last year's; not announced yet">est.</span>` : "") + `</div>`;
   }
 
