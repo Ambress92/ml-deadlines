@@ -6,7 +6,7 @@
   --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --sans:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-  --namew:220px;
+  --namew:220px; --axish:34px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -72,14 +72,15 @@ button:focus-visible,.chip:focus-visible,[tabindex]:focus-visible,input:focus-vi
 .tl-scroll{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:10px}
 .tl{position:relative; min-width:880px}
 .tl-head,.trow{display:grid; grid-template-columns:var(--namew) 1fr}
-.tl-head{height:34px; border-bottom:1px solid var(--line)}
+.tl-head{height:var(--axish); border-bottom:1px solid var(--line)}
 .tl-head .axis{position:relative}
 .mo{position:absolute; top:10px; font:500 11px var(--mono); color:var(--muted); padding-left:5px; white-space:nowrap}
 .mo.jan{color:var(--ink); font-weight:600}
 .grid{position:absolute; top:0; bottom:0; left:var(--namew); right:0; pointer-events:none; z-index:0}
 .grid i{position:absolute; top:0; bottom:0; width:1px; background:var(--line)}
-.grid .now{width:2px; background:var(--today); z-index:3}
-.grid .now::before{content:"today"; position:absolute; top:-1px; left:50%; transform:translateX(-50%); font:600 10px var(--mono); color:var(--today); background:var(--surface); padding:0 3px}
+.grid .now{top:var(--axish); width:2px; background:var(--today); z-index:3}
+/* the today line starts below the month labels; its label stays at the top of the axis */
+.grid .now::before{content:"today"; position:absolute; top:calc(-1px - var(--axish)); left:50%; transform:translateX(-50%); font:600 10px var(--mono); color:var(--today); background:var(--surface); padding:0 3px}
 .trow{border-bottom:1px solid var(--line); min-height:54px}
 .trow:last-child{border-bottom:0}
 .tname{padding:8px 12px 8px 14px; display:flex; flex-direction:column; justify-content:center; gap:2px; border-right:1px solid var(--line); background:var(--surface); position:sticky; left:0; z-index:4}
@@ -169,10 +170,11 @@ footer a:hover{color:var(--accent)}
 /* phones: one stacked row per venue (name above the track); about 9 of the 12 months are
    visible and the chart scrolls sideways, with the names pinned to the left */
 @media (max-width:640px){
+  :root{--axish:30px}
   .wrap{padding-inline:14px}
   .tl{min-width:0; width:calc(100% * 12 / 9)}
   .swipe-hint{display:block; margin:-12px 0 0; font-size:12px; color:var(--muted)}
-  .tl-head{grid-template-columns:1fr; height:30px}
+  .tl-head{grid-template-columns:1fr}
   .tl-head > div:first-child{display:none}
   .grid{left:0}
   .trow{grid-template-columns:1fr; min-height:0}
