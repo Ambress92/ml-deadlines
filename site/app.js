@@ -13,9 +13,11 @@
   const SUBMISSION = new Set(["abstract", "paper"]);
   const DAY = 864e5;
 
-  const localFmt = new Intl.DateTimeFormat(undefined, {weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"});
-  const dayFmt = new Intl.DateTimeFormat(undefined, {month: "short", day: "numeric"});
-  const monthFmt = new Intl.DateTimeFormat(undefined, {month: "short", year: "numeric"});
+  // the site is in English: US visitors get US dates (Jun 13, 1:59 PM), everyone else UK ones (13 Jun, 13:59)
+  const LOCALE = /^en(-(US|CA|PH))?$/i.test(navigator.language || "") ? "en-US" : "en-GB";
+  const localFmt = new Intl.DateTimeFormat(LOCALE, {weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"});
+  const dayFmt = new Intl.DateTimeFormat(LOCALE, {month: "short", day: "numeric"});
+  const monthFmt = new Intl.DateTimeFormat(LOCALE, {month: "short", year: "numeric"});
   const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
   // phones get a stacked timeline that fits all 12 months on screen (see style.css)
   const narrowQuery = window.matchMedia("(max-width: 640px)");
@@ -44,6 +46,12 @@
   function rangeText(a, b) {
     const da = day(a), db = day(b);
     if (a === b) return dayFmt.format(da);
+    // formatRange puts the day and month in the visitor's order: "Jun 13 – 19" in the US, "13–19 Jun" in the UK
+    // a range within one month drops the spaces around the dash ("Jun 13–19"), as before
+    if (dayFmt.formatRange) {
+      const text = dayFmt.formatRange(da, db);
+      return da.getMonth() === db.getMonth() ? text.replace(/\s*–\s*/, "–") : text;
+    }
     return da.getMonth() === db.getMonth() ? `${dayFmt.format(da)}–${db.getDate()}` : `${dayFmt.format(da)} – ${dayFmt.format(db)}`;
   }
   function countdown(ms) {
@@ -200,7 +208,7 @@
       const narrow = narrowQuery.matches;
       const year = " " + d.getFullYear();
       // on phones January is marked in bold instead of carrying the year, to save space
-      const lbl = d.toLocaleString(undefined, {month: "short"}) + (!narrow && (jan || firstLabel) ? year : "");
+      const lbl = d.toLocaleString(LOCALE, {month: "short"}) + (!narrow && (jan || firstLabel) ? year : "");
       if (Math.abs(x - nowX) > 2) {
         head += `<div class="mo${jan ? " jan" : ""}" style="left:${x}%">${lbl}</div>`;
         firstLabel = false;
@@ -311,7 +319,7 @@
     el.innerHTML = `<span class="lbl">Rolling submissions</span>` + items.map(v => {
       const r = v.rolling, dates = r.dates.filter(t => t > now);
       if (!dates.length) return "";
-      const officialFmt = new Intl.DateTimeFormat(undefined, {month: "short", day: "numeric", timeZone: r.tz === "AoE" ? "Etc/GMT+12" : r.tz});
+      const officialFmt = new Intl.DateTimeFormat(LOCALE, {month: "short", day: "numeric", timeZone: r.tz === "AoE" ? "Etc/GMT+12" : r.tz});
       const fmt = t => officialFmt.format(new Date(t));
       const ms = dates[0] - now;
       return `<span class="ven"><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.name)}</a><small>${esc(r.label)}</small></span>
