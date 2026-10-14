@@ -50,7 +50,7 @@
     if (ms <= 0) return "passed";
     const d = Math.floor(ms / DAY), h = Math.floor(ms % DAY / 36e5), m = Math.floor(ms % 36e5 / 6e4);
     if (d >= 10) return `${d}d`;
-    return d >= 1 ? `${d}d ${String(h).padStart(2, "0")}h` : `${h}h ${String(m).padStart(2, "0")}m`;
+    return d >= 1 ? `${d}d\u00a0${String(h).padStart(2, "0")}h` : `${h}h\u00a0${String(m).padStart(2, "0")}m`;
   }
   const urgency = ms => ms < 7 * DAY ? "urgent" : ms < 30 * DAY ? "soon" : "";
   function phaseName(e) {
@@ -157,19 +157,25 @@
 
   // the countdown under each name (rows() decides what it counts down to)
   function countdowns(r, now) {
-    const {moment, ed} = r;
+    const {moment} = r;
     if (!moment) return `<span class="cd">${NONE[state.sort]}</span>`;
-    const label = momentLabel(moment, ed.year), ms = moment.t - now;
+    const ms = moment.t - now;
     const cls = ACTIONABLE.has(moment.e.type) && !moment.ends ? urgency(ms) : "";
-    return `<span class="cd ${cls}" data-cd="${moment.t}" data-prefix="${esc(label)} in ">${esc(label)} in ${countdown(ms)}</span>`;
+    // the row says only the phase ("Notification in 1d 02h"); its edition and round are in the
+    // tooltip and on the timeline. An estimated date gets a tilde, since the row has no "est." tag
+    const name = state.sort === "decision" && moment.e.type === "notification" ? "Decision" : LABEL[moment.e.type];
+    const prefix = `${name}${moment.ends ? " ends" : ""} in\u00a0${moment.e.estimated ? "~" : ""}`;
+    const title = momentLabel(moment, null) + (moment.e.estimated ? ", estimated from last year's dates" : "");
+    return `<span class="cd ${cls}" title="${esc(title)}" data-cd="${moment.t}" data-prefix="${esc(prefix)}">${esc(prefix)}${countdown(ms)}</span>`;
   }
 
-  function nameCell(r) {
+  // the list cards show an "est." tag; the timeline rows leave it out, since their marks are dashed
+  function nameCell(r, tag = true) {
     const {v, ed, est} = r;
     return `<div class="vn"><a href="${esc(ed.url || v.url)}" target="_blank" rel="noopener" title="${esc(v.full_name)}">${esc(v.name)}</a>`
       + `<span class="ed">${ed.year}</span>`
       + (v.rank === "A*" || v.rank === "A" ? `<span class="rank" title="ICORE 2026 rank">${esc(v.rank)}</span>` : "")
-      + (est ? `<span class="est-tag" title="Dates estimated from last year's; not announced yet">est.</span>` : "") + `</div>`;
+      + (est && tag ? `<span class="est-tag" title="Dates estimated from last year's; not announced yet">est.</span>` : "") + `</div>`;
   }
 
   // ------------------------------------------------------------- timeline
@@ -224,7 +230,8 @@
           marks += `<span class="band ${isConf ? "conf" : "rebuttal"}${cls(e)}" style="left:${clamp(a)}%;width:${clamp(b) - clamp(a)}%" ${tip(`${isConf ? `${v.name} ${e.edition}` : phaseName(e)}\n${rangeText(e.start, e.end)}${isConf ? "\n" + loc : ""}${e.estimated ? "\nEstimated" : ""}`)}></span>`;
           if (isConf) {
             const narrow = narrowQuery.matches;
-            const pos = b < (narrow ? 72 : 82) ? `left:calc(${clamp(b)}% + 5px)` : `right:calc(${100 - clamp(a)}% + 5px)`;
+            // the block is at least 6px wide (a conference ending today), so the label starts after that
+            const pos = b < (narrow ? 72 : 82) ? `left:calc(max(${clamp(b)}%, ${clamp(a)}% + 6px) + 5px)` : `right:calc(${100 - clamp(a)}% + 5px)`;
             const text = narrow ? (e.city || "TBA").split(" / ")[0] : prefix + rangeText(e.start, e.end) + " · " + city;
             marks += `<span class="clabel${cls(e)}" style="${pos}">${esc(text)}</span>`;
           }
@@ -245,7 +252,7 @@
         }
       }
       const cd = countdowns(r, now);
-      return `<div class="trow"><div class="tname"><div class="row1">${nameCell(r)}${subButton(v, true)}</div>${cd}</div>
+      return `<div class="trow"><div class="tname"><div class="row1">${nameCell(r, false)}${subButton(v, true)}</div>${cd}</div>
         <div class="track">${marks}</div></div>`;
     }).join("");
 
@@ -380,7 +387,27 @@
       ? (state.view === "timeline" ? renderTimeline(list, now) : renderList(list, now))
       : `<div class="list empty">${empty}</div>`;
     document.getElementById("legend").hidden = state.view !== "timeline";
+    liftLabels();
   }
+
+  // conference labels are sized in pixels but placed on a percentage axis, so whether one covers a
+  // marker depends on the window width: measure, and lift the ones that do above the row's line
+  function liftLabels() {
+    if (narrowQuery.matches) return;  // phones show only the city, and the row is too short to lift into
+    document.querySelectorAll(".track .clabel").forEach(l => {
+      l.classList.remove("lift");
+      const a = l.getBoundingClientRect();
+      l.classList.toggle("lift", [...l.parentNode.children].some(m => {
+        // skip the label's own conference block, drawn just before it, and the other labels
+        if (m === l || m === l.previousElementSibling || m.classList.contains("clabel")) return false;
+        const b = m.getBoundingClientRect();
+        return b.width > 0 && a.left < b.right + 3 && b.left - 3 < a.right;
+      }));
+    });
+  }
+  let liftFrame = 0;
+  addEventListener("resize", () => { cancelAnimationFrame(liftFrame); liftFrame = requestAnimationFrame(liftLabels); });
+  document.fonts?.ready.then(liftLabels);  // label widths change once the web fonts arrive
 
   function tick() {
     const now = Date.now();

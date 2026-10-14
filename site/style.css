@@ -6,7 +6,7 @@
   --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --sans:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-  --namew:220px; --axish:34px;
+  --namew:210px; --axish:34px;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -99,12 +99,13 @@ button:focus-visible,select:focus-visible,[tabindex]:focus-visible,input:focus-v
 .trow{border-bottom:1px solid var(--line); min-height:54px}
 .trow:last-child{border-bottom:0}
 .tname{padding:8px 12px 8px 14px; display:flex; flex-direction:column; justify-content:center; gap:2px; border-right:1px solid var(--line); background:var(--surface); position:sticky; left:0; z-index:4}
-.vn{font-family:var(--display); font-weight:700; font-size:15px; display:flex; align-items:baseline; gap:6px}
+.vn{font-family:var(--display); font-weight:700; font-size:15px; display:flex; align-items:baseline; gap:5px}
+.vn a{white-space:nowrap}
 .vn a{color:inherit; text-decoration:none; border-bottom:1px solid var(--line)}
 .vn a:hover{color:var(--accent); border-bottom-color:var(--accent)}
 .vn .ed{font:500 12px var(--mono); color:var(--muted)}
 .rank{font:600 10.5px var(--mono); padding:1px 5px; border-radius:4px; background:var(--surface-2); color:var(--muted)}
-.cd{font:500 12px var(--mono); color:var(--muted); white-space:nowrap}
+.cd{font:500 12px var(--mono); color:var(--muted)}
 .cd.urgent{color:var(--urgent)} .cd.soon{color:var(--soon)}
 
 .est-tag{font:600 10px var(--mono); text-transform:uppercase; letter-spacing:.06em; color:var(--faint); border:1px dashed var(--faint); border-radius:4px; padding:0 4px}
@@ -122,6 +123,8 @@ button:focus-visible,select:focus-visible,[tabindex]:focus-visible,input:focus-v
 .mk.camera{width:8px; height:8px; margin:-4px 0 0 -4px; background:var(--camera)}
 .band[data-tip]{cursor:default}
 .clabel{position:absolute; top:50%; transform:translateY(-50%); font:500 11px var(--mono); color:var(--muted); white-space:nowrap}
+/* a label that would cover a marker sits above the row's line instead */
+.clabel.lift{transform:translateY(calc(-50% - 17px))}
 .past{opacity:.3}
 .track .est:not(.past){opacity:.6}
 .band.conf.est,.band.review.est{background:transparent; border:1.5px dashed var(--faint)}
