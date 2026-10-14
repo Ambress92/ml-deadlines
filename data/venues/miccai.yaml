@@ -1,0 +1,39 @@
+name: MICCAI
+full_name: International Conference on Medical Image Computing and Computer Assisted Intervention
+area: cv
+rank: A
+url: https://miccai.org
+edition_url_pattern: https://conferences.miccai.org/{year}/en/
+editions:
+  - year: 2026
+    url: https://conferences.miccai.org/2026/en/
+    cfp_url: https://conferences.miccai.org/2026/en/CALL-FOR-PAPERS.html
+    source: https://conferences.miccai.org/2026/en/IMPORTANT-DATES.html
+    last_verified: 2026-10-14
+    location: {city: Strasbourg, country: France}
+    start: 2026-09-27
+    end: 2026-10-01
+    timezone: America/Los_Angeles
+    rounds:
+      - abstract: 2026-02-12
+        paper: 2026-02-26
+        rebuttal: [2026-05-08, 2026-05-14]
+        notification: 2026-06-12
+        camera_ready: 2026-06-26
+        note: Early acceptances and reviews came out May 7; only papers without an early decision went to rebuttal.
+  - year: 2027
+    url: https://conferences.miccai.org/2027/en/
+    source: https://conferences.miccai.org/2027/en/
+    last_verified: 2026-10-14
+    location: {city: Auckland, country: New Zealand}
+    start: 2027-09-27
+    end: 2027-10-01
+    notes: Call for papers not published yet.
+  - year: 2028
+    url: https://conferences.miccai.org/2028/en/
+    source: https://conferences.miccai.org/2028/en/
+    last_verified: 2026-10-14
+    location: {city: São Paulo, country: Brazil}
+    start: 2028-10-16
+    end: 2028-10-20
+    notes: Call for papers not published yet.

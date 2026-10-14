@@ -1,0 +1,22 @@
+name: ICRA
+full_name: IEEE International Conference on Robotics and Automation
+area: ro
+rank: A*
+url: https://www.ieee-ras.org/conferences-workshops/fully-sponsored/icra/
+edition_url_pattern: https://{year}.ieee-icra.org/
+editions:
+  - year: 2027
+    url: https://2027.ieee-icra.org/
+    cfp_url: https://2027.ieee-icra.org/contribute/call-for-icra-2027-papers-now-accepting-submissions/
+    source: https://2027.ieee-icra.org/contribute/call-for-icra-2027-papers-now-accepting-submissions/
+    last_verified: 2026-10-14
+    location: {city: Seoul, country: South Korea}
+    format: in-person
+    start: 2027-05-24
+    end: 2027-05-28
+    timezone: America/Los_Angeles
+    notes: The call for papers gives deadlines as 23:59 PST, and the IEEE RAS page says all deadlines are Pacific time.
+    rounds:
+      - paper: 2026-09-16
+        notification: 2027-01-31
+        note: Extended by 24 hours. Papers accepted at RAS journals (RA-L, T-RO and others) can be transferred for presentation until Dec 31, 2026.

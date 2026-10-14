@@ -1,6 +1,6 @@
 # ML Deadlines
 
-Submission deadlines, review phases, dates and locations of the main A*/A conferences (CORE 2023) in machine learning, AI, NLP, computer vision, data mining, information retrieval and databases.
+Submission deadlines, review phases, dates and locations of the main A*/A conferences (ICORE 2026) in machine learning, AI, NLP, computer vision, robotics, fairness, data mining, information retrieval and databases.
 
 **Site:** https://ambress92.github.io/ml-deadlines/
 
@@ -18,17 +18,19 @@ Every date comes from the official conference website, which each entry links to
 |---|---|
 | Core ML | NeurIPS, ICML, ICLR, AISTATS, UAI, COLT |
 | General AI | AAAI, IJCAI, ECAI, AAMAS |
-| Vision | CVPR, ICCV, ECCV |
+| Vision | CVPR, ICCV, ECCV, WACV, BMVC, MICCAI |
 | NLP | ACL, EMNLP, NAACL, COLM |
 | Data mining & IR | KDD, ICDM, WSDM, SIGIR, WWW, CIKM, ECML-PKDD |
 | Databases | SIGMOD, ICDE, VLDB |
+| Robotics | ICRA, IROS, CoRL, RSS |
+| Fairness & ethics | FAccT, AIES, EAAMO |
 
-COLM is listed although it has no CORE rank: it was first held in 2024, after the CORE 2023 ranking was made.
+Ranks come from ICORE 2026, the current edition of the CORE ranking. A few major venues are listed although ICORE 2026 does not rank them A* or A: COLM (first held in 2024), CoRL (listed as unranked), RSS (ranked A* by CORE in 2018, no longer listed), FAccT and EAAMO (not listed), and AIES (ranked C). They are shown without a rank badge.
 
 ## Contributing
 
 - **A date is wrong or new dates are out:** open a [Report a wrong date](../../issues/new?template=update-dates.yml) issue with a link to the official page, or edit the venue's file in `data/venues/` and open a pull request.
-- **A conference is missing:** open a [Suggest a conference](../../issues/new?template=add-conference.yml) issue. The site covers A* and A venues in the areas above.
+- **A conference is missing:** open a [Suggest a conference](../../issues/new?template=add-conference.yml) issue. The site covers ICORE A* and A venues in the areas above.
 
 The file format is described in [data/SCHEMA.md](data/SCHEMA.md). Pull requests are validated automatically.
 

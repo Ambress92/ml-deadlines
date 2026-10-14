@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ML Deadlines</title>
-<meta name="description" content="Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, data mining and databases. Subscribe in your calendar.">
+<meta name="description" content="Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, robotics, fairness, data mining and databases. Subscribe in your calendar.">
 <link rel="canonical" href="https://ambress92.github.io/ml-deadlines/">
 <meta name="google-site-verification" content="tQn860gtZTyTeX4KNDetB0hf03Wg_ztOCes29v9D6dY">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ML Deadlines">
 <meta property="og:title" content="ML Deadlines">
-<meta property="og:description" content="Deadlines, review phases, dates and locations of the main A*/A conferences in ML, AI, NLP, vision, data mining and databases, on one timeline.">
+<meta property="og:description" content="Deadlines, review phases, dates and locations of the main A*/A conferences in ML, AI, NLP, vision, robotics, fairness, data mining and databases, on one timeline.">
 <meta property="og:url" content="https://ambress92.github.io/ml-deadlines/">
 <meta property="og:image" content="https://ambress92.github.io/ml-deadlines/og.png">
 <meta property="og:image:width" content="1200">
@@ -28,7 +28,7 @@
   <header>
     <div>
       <h1>ML Deadlines</h1>
-      <p class="sub">Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, data mining and databases.</p>
+      <p class="sub">Submission deadlines, review phases, dates and locations of the main A*/A conferences in machine learning, AI, NLP, vision, robotics, fairness, data mining and databases.</p>
     </div>
   </header>
 
@@ -43,7 +43,10 @@
       <option value="decision">Next decision</option>
       <option value="conference">Next conference</option>
     </select></label>
-    <label class="pick" id="area-pick"><span class="sr">Area</span><select id="area"></select></label>
+    <div class="pick" id="area-pick">
+      <button type="button" id="area-btn" aria-haspopup="true" aria-expanded="false">All areas</button>
+      <div class="area-pop" id="area-pop" role="group" aria-label="Areas" hidden></div>
+    </div>
     <label class="search"><span class="sr">Search conferences</span>
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
       <input type="search" id="q" placeholder="Search name, city, country" autocomplete="off" spellcheck="false" enterkeyhint="search">

@@ -1,8 +1,9 @@
 // Renders the timeline and list views from the data embedded by scripts/build.py.
 (function () {
   const DATA = window.__DATA__;
-  const AREAS = [["all", "All areas"], ["ml", "Core ML"], ["ai", "General AI"], ["cv", "Vision"],
-                 ["nlp", "NLP"], ["dm", "Data mining & IR"], ["db", "Databases"]];
+  const AREAS = [["ml", "Core ML"], ["ai", "General AI"], ["cv", "Vision"],
+                 ["nlp", "NLP"], ["dm", "Data mining & IR"], ["db", "Databases"], ["ro", "Robotics"], ["fair", "Fairness & ethics"]];
+  const AREA_KEYS = AREAS.map(a => a[0]);
   const SORTS = ["submission", "rebuttal", "decision", "conference"];
   // shown under a venue's name when nothing is coming up for the chosen order
   const NONE = {submission: "No dates announced", rebuttal: "No upcoming rebuttal",
@@ -14,16 +15,19 @@
 
   const localFmt = new Intl.DateTimeFormat(undefined, {weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"});
   const dayFmt = new Intl.DateTimeFormat(undefined, {month: "short", day: "numeric"});
+  const monthFmt = new Intl.DateTimeFormat(undefined, {month: "short", year: "numeric"});
   const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
   // phones get a stacked timeline that fits all 12 months on screen (see style.css)
   const narrowQuery = window.matchMedia("(max-width: 640px)");
 
   // the search text (q) is not remembered between visits; everything else is
-  let state = {view: "timeline", area: "all", showEst: true, sort: "submission", q: ""};
+  // areas: the chosen areas, or null for all of them (so areas added later show up too)
+  let state = {view: "timeline", areas: null, showEst: true, sort: "submission", q: ""};
   try {
     const saved = JSON.parse(localStorage.getItem("mld-state") || "{}");
     if (saved.view === "list" || saved.view === "timeline") state.view = saved.view;
-    if (AREAS.some(a => a[0] === saved.area)) state.area = saved.area;
+    if (Array.isArray(saved.areas)) state.areas = saved.areas.filter(k => AREA_KEYS.includes(k));
+    else if (AREA_KEYS.includes(saved.area)) state.areas = [saved.area];  // the one-area menu before the checkboxes
     if (typeof saved.showEst === "boolean") state.showEst = saved.showEst;
     if (saved.sort === "deadline") state.sort = "submission";  // the name before the sort menu existed
     else if (SORTS.includes(saved.sort)) state.sort = saved.sort;
@@ -88,6 +92,7 @@
   const INDEX = new Map(DATA.venues.map(v => {
     const places = v.editions.filter(e => !e.end || endOfDay(e.end) >= loaded).map(e => e.location || "");
     if (places.some(p => /\bUSA\b/.test(p))) places.push("United States America");
+    if (places.some(p => /\bUK\b/.test(p))) places.push("United Kingdom");
     return [v.id, {acronym: words(v.name).join(""),
                    words: words([v.name, v.full_name, ...v.editions.map(e => e.year), ...places].join(" "))}];
   }));
@@ -101,7 +106,7 @@
   function shown(v) {
     // a search covers every area: the remembered area filter would otherwise hide what was asked for
     if (searching()) return matches(v, state.q);
-    return state.area === "all" || v.area === state.area;
+    return state.areas === null || state.areas.includes(v.area);
   }
 
   // ---------------------------------------------------------------- model
@@ -163,7 +168,7 @@
     const {v, ed, est} = r;
     return `<div class="vn"><a href="${esc(ed.url || v.url)}" target="_blank" rel="noopener" title="${esc(v.full_name)}">${esc(v.name)}</a>`
       + `<span class="ed">${ed.year}</span>`
-      + (v.rank === "unranked" ? "" : `<span class="rank" title="CORE 2023 rank">${esc(v.rank)}</span>`)
+      + (v.rank === "A*" || v.rank === "A" ? `<span class="rank" title="ICORE 2026 rank">${esc(v.rank)}</span>` : "")
       + (est ? `<span class="est-tag" title="Dates estimated from last year's; not announced yet">est.</span>` : "") + `</div>`;
   }
 
@@ -231,6 +236,14 @@
         const when = SUBMISSION.has(e.type) ? `${localFmt.format(new Date(e.t))} your time\n${e.when}` : e.when;
         marks += `<span class="mk ${shape}${cls(e)}" style="left:${x}%" ${tip(`${phaseName(e)}${e.estimated ? " (estimated)" : ""}\n${when}${e.note ? "\n" + e.note : ""}`)}></span>`;
       });
+      // a row with nothing in the 12 months (a biennial venue between editions) says when its next date is
+      if (!marks) {
+        const later = events.filter(e => (e.t ?? startOfDay(e.start)) > END).sort((a, b) => (a.t ?? startOfDay(a.start)) - (b.t ?? startOfDay(b.start)))[0];
+        if (later) {
+          const when = monthFmt.format(new Date(later.t ?? startOfDay(later.start)));
+          marks = `<span class="clabel${cls(later)}" style="right:5px">Next: ${esc(phaseName(later).toLowerCase())}, ${esc(when)}${later.estimated ? " (est.)" : ""} →</span>`;
+        }
+      }
       const cd = countdowns(r, now);
       return `<div class="trow"><div class="tname"><div class="row1">${nameCell(r)}${subButton(v, true)}</div>${cd}</div>
         <div class="track">${marks}</div></div>`;
@@ -336,17 +349,28 @@
 
   // ---------------------------------------------------------------- render
 
+  function areaLabel() {
+    if (state.areas === null) return "All areas";
+    const names = AREAS.filter(([k]) => state.areas.includes(k)).map(a => a[1]);
+    if (!names.length) return "No areas";
+    if (names.length === 1 || (names.length === 2 && names.join(", ").length <= 20)) return names.join(", ");
+    return `${names.length} areas`;
+  }
+
   function render() {
     const now = Date.now();
     document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
     document.getElementById("sort").value = state.sort;
-    document.getElementById("area").value = state.area;
+    document.getElementById("area-btn").textContent = areaLabel();
+    document.querySelectorAll("#area-pop [data-area]").forEach(i => { i.checked = state.areas === null || state.areas.includes(i.dataset.area); });
+    // "All areas" is ticked only when every area is; otherwise it is empty, and ticking it turns them all on
+    document.getElementById("area-all").checked = state.areas === null;
     // the area menu is dimmed while a search runs, since the search covers all areas
     document.getElementById("area-pick").classList.toggle("off", searching());
     document.getElementById("show-est").checked = state.showEst;
     renderRolling(now);
     const list = rows(now);
-    let empty = "No venues in this area.";
+    let empty = state.areas && !state.areas.length ? "No area chosen. Pick one or more in the areas menu." : "No venues in these areas.";
     if (searching()) {
       const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
       empty = rolling.length ? `${esc(rolling.join(", "))} takes submissions on a rolling basis, shown below.`
@@ -367,7 +391,7 @@
 
   const gen = new Date(DATA.generated);
   document.getElementById("footer").innerHTML =
-    `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from CORE 2023. Times are in your time zone (${esc(tzName)}).</span>
+    `<span>Data updated ${dayFmt.format(gen)} ${gen.getFullYear()}. Ranks from ICORE 2026. Times are in your time zone (${esc(tzName)}).</span>
      <span>Visits are counted anonymously with <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a>: no cookies, no personal data stored.</span>
      <a href="${esc(DATA.repo)}/issues/new?template=update-dates.yml" target="_blank" rel="noopener">Report a wrong date</a>
      <a href="${esc(DATA.repo)}/issues/new?template=add-conference.yml" target="_blank" rel="noopener">Suggest a conference</a>
@@ -391,9 +415,22 @@
     const vb = e.target.closest("[data-view]");
     if (vb) { state.view = vb.dataset.view; save(); render(); }
   });
-  document.getElementById("area").innerHTML = AREAS.map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("");
+  // areas menu: one checkbox per area; "All areas" turns them all on, or all off when they all are on
+  const areaPop = document.getElementById("area-pop"), areaBtn = document.getElementById("area-btn");
+  areaPop.innerHTML = `<label class="all"><input type="checkbox" id="area-all"> All areas</label>`
+    + AREAS.map(([k, l]) => `<label><input type="checkbox" data-area="${k}"> ${esc(l)}</label>`).join("");
+  const setAreaPop = open => { areaPop.hidden = !open; areaBtn.setAttribute("aria-expanded", open); };
+  areaBtn.addEventListener("click", () => setAreaPop(areaPop.hidden));
+  areaPop.addEventListener("change", e => {
+    if (e.target.id === "area-all") state.areas = e.target.checked ? null : [];
+    else {
+      const on = [...areaPop.querySelectorAll("[data-area]")].filter(i => i.checked).map(i => i.dataset.area);
+      state.areas = on.length === AREA_KEYS.length ? null : on;
+    }
+    save(); render();
+  });
+  document.addEventListener("click", e => { if (!e.target.closest("#area-pick")) setAreaPop(false); });
   document.getElementById("sort").addEventListener("change", e => { state.sort = e.target.value; save(); render(); });
-  document.getElementById("area").addEventListener("change", e => { state.area = e.target.value; save(); render(); });
   document.getElementById("show-est").addEventListener("change", e => { state.showEst = e.target.checked; save(); render(); });
   const qEl = document.getElementById("q");
   const setQuery = text => { state.q = text; render(); };
@@ -401,6 +438,7 @@
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
       closeMenu();
+      if (!areaPop.hidden) { setAreaPop(false); areaBtn.focus(); }
       if (document.activeElement === qEl && qEl.value) { qEl.value = ""; setQuery(""); }
     }
     // "/" jumps to the search box, unless the visitor is already typing somewhere

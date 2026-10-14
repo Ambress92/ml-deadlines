@@ -1,6 +1,6 @@
 # ML Deadlines
 
-A static website listing deadlines, dates and locations of 27 conferences in ML, AI, NLP, vision, data mining/IR and databases: 26 ranked A* or A in CORE 2023, plus COLM, which started after CORE 2023 and is marked `rank: unranked`. Public repo: https://github.com/Ambress92/ml-deadlines. The site is deployed to GitHub Pages on every push to `main`, and it is rebuilt every day.
+A static website listing deadlines, dates and locations of 37 conferences in ML, AI, NLP, vision, robotics, fairness & ethics, data mining/IR and databases: 31 ranked A* or A in ICORE 2026 (the CORE ranking, renamed), plus six major venues it does not rank that high: COLM, CoRL, RSS, FAccT and EAAMO (`rank: unranked`) and AIES (`rank: C`). Only A* and A show a badge on the site. Public repo: https://github.com/Ambress92/ml-deadlines. The site is deployed to GitHub Pages on every push to `main`, and it is rebuilt every day.
 
 ## Layout
 
@@ -34,7 +34,7 @@ The user runs this manually, roughly every two weeks, by asking Claude to update
 
 ## Workflow: "add a conference"
 
-1. Check the CORE 2023 rank at https://portal.core.edu.au/conf-ranks/ (the site covers A* and A only).
+1. Check the ICORE 2026 rank at https://portal.core.edu.au/conf-ranks/ (the site covers A* and A only, plus the exceptions above).
 2. Run `.venv/bin/python scripts/new_venue.py <id> --name ... --full-name ... --area ... --rank ... --url ...`.
 3. Fill in the file from the official pages, following the data rules above. Delete the fields that the pages do not state.
 4. Run `build.py --check`, preview with `build.py --serve`, then commit.

@@ -5,7 +5,7 @@ labels: ["new conference"]
 body:
   - type: markdown
     attributes:
-      value: The site lists A* and A conferences (CORE 2023) in machine learning, AI, NLP, vision, data mining, IR and databases.
+      value: The site lists A* and A conferences (ICORE 2026) in machine learning, AI, NLP, vision, robotics, fairness, data mining, IR and databases.
   - type: input
     id: name
     attributes:
@@ -23,13 +23,13 @@ body:
     id: area
     attributes:
       label: Area
-      options: [Core ML, General AI, Vision, NLP, Data mining & IR, Databases]
+      options: [Core ML, General AI, Vision, NLP, Data mining & IR, Databases, Robotics, Fairness & ethics]
     validations:
       required: true
   - type: dropdown
     id: rank
     attributes:
-      label: CORE 2023 rank
+      label: ICORE 2026 rank
       description: Check it at https://portal.core.edu.au/conf-ranks/
       options: ["A*", "A"]
     validations:

@@ -1,0 +1,36 @@
+name: RSS
+full_name: "Robotics: Science and Systems"
+area: ro
+rank: unranked
+url: https://roboticsconference.org
+notes: CORE ranked RSS A* in 2018; ICORE 2026 does not list it.
+editions:
+  - year: 2026
+    url: https://roboticsconference.org/2026/
+    cfp_url: https://roboticsconference.org/2026/information/cfp/
+    source: https://roboticsconference.org/2026/information/cfp/
+    last_verified: 2026-10-14
+    location: {city: Sydney, country: Australia}
+    start: 2026-07-13
+    end: 2026-07-17
+    rounds:
+      - abstract: 2026-01-23
+        paper: 2026-01-30
+        rebuttal: [2026-03-20, 2026-03-27]
+        notification: 2026-04-27
+        camera_ready: 2026-05-11
+        note: Only some papers were invited to rebut.
+  - year: 2027
+    url: https://roboticsconference.org/
+    cfp_url: https://roboticsconference.org/information/cfp/
+    source: https://roboticsconference.org/information/cfp/
+    last_verified: 2026-10-14
+    location: {city: Athens, country: Greece}
+    start: 2027-07-06
+    end: 2027-07-11
+    rounds:
+      - paper: 2026-12-04
+        rebuttal: [2027-02-05, 2027-02-12]
+        notification: 2027-04-30
+        camera_ready: 2027-05-14
+        note: New two-stage process. The deadline is for a 6-page extended abstract; papers invited after the second stage (Feb 26) submit the full 8-page paper by Apr 16, 2027.

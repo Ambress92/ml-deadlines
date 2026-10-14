@@ -1,0 +1,21 @@
+name: EAAMO
+full_name: ACM Conference on Equity and Access in Algorithms, Mechanisms, and Optimization
+area: fair
+rank: unranked
+url: https://conference.eaamo.org
+edition_url_pattern: https://conference{year}.eaamo.org/
+notes: ICORE 2026 does not list EAAMO.
+editions:
+  - year: 2026
+    url: https://conference2026.eaamo.org/
+    cfp_url: https://conference2026.eaamo.org/cfp/
+    source: https://conference2026.eaamo.org/cfp/
+    last_verified: 2026-10-14
+    location: {city: Munich, country: Germany}
+    start: 2026-11-05
+    end: 2026-11-07
+    rounds:
+      - abstract: 2026-05-08
+        paper: 2026-05-15
+        notification: 2026-08-01
+        note: Both deadlines were extended by one week.

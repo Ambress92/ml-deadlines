@@ -4,7 +4,7 @@ area: nlp
 rank: unranked
 url: https://colm.cc
 edition_url_pattern: https://colm.cc/Conferences/{year}
-notes: First held in 2024, after the CORE 2023 ranking, so it has no CORE rank.
+notes: First held in 2024. ICORE 2026 does not rank it.
 editions:
   - year: 2026
     url: https://colm.cc/Conferences/2026

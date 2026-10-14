@@ -19,7 +19,7 @@ import json
 import shutil
 import sys
 
-from venues import PHASE_LABELS, ROOT, load_all, resolve
+from venues import BADGE_RANKS, PHASE_LABELS, ROOT, load_all, resolve
 
 SITE_DIR = ROOT / "site"
 DIST = ROOT / "dist"
@@ -99,7 +99,7 @@ def static_html(venues: list[dict], now: dt.datetime) -> str:
             where = f", {conf['location']}" if conf["location"] else ""
             parts.append(f"conference {_fmt_range(conf['start'], conf['end'])}{where}")
         year = subs[0]["edition"] if subs else (conf["edition"] if conf else v["editions"][-1]["year"])
-        rank = "" if v["rank"] == "unranked" else f"{v['rank']}, "
+        rank = f"{v['rank']}, " if v["rank"] in BADGE_RANKS else ""
         rows.append((subs[0]["at"] if subs else now + dt.timedelta(days=4000),
                      f"<li><a href=\"{v['url']}\">{v['name']} {year}</a> ({rank}{v['area_label']}): "
                      f"{'; '.join(parts) or 'dates not announced'}.</li>"))

@@ -1,0 +1,20 @@
+name: AIES
+full_name: AAAI/ACM Conference on AI, Ethics, and Society
+area: fair
+rank: C
+url: https://www.aies-conference.com
+edition_url_pattern: https://www.aies-conference.com/{year}/
+notes: ICORE 2026 ranks AIES C. The site lists it without a rank badge.
+editions:
+  - year: 2026
+    url: https://www.aies-conference.com/2026/
+    cfp_url: https://www.aies-conference.com/2026/call-for-papers/
+    source: https://www.aies-conference.com/2026/call-for-papers/
+    last_verified: 2026-10-14
+    location: {city: Malmö, country: Sweden}
+    start: 2026-10-12
+    end: 2026-10-14
+    rounds:
+      - abstract: 2026-05-14
+        paper: 2026-05-21
+        notification: 2026-07-16

@@ -1,0 +1,30 @@
+name: WACV
+full_name: IEEE/CVF Winter Conference on Applications of Computer Vision
+area: cv
+rank: A
+url: https://wacv.thecvf.com
+edition_url_pattern: https://wacv.thecvf.com/Conferences/{year}
+editions:
+  - year: 2027
+    url: https://wacv.thecvf.com/Conferences/2027
+    cfp_url: https://wacv.thecvf.com/Conferences/2027/CallForPapers
+    source: https://wacv.thecvf.com/Conferences/2027/Dates
+    last_verified: 2026-10-14
+    location: {city: Lake Buena Vista, country: USA}
+    start: 2027-01-04
+    end: 2027-01-08
+    notes: The call for papers still gives Aug 7 and Oct 9 for the decisions; the dates page and the home page give Aug 9 and Oct 14, used here.
+    rounds:
+      - name: Round 1
+        abstract: 2026-06-19
+        paper: 2026-06-26
+        rebuttal: [2026-08-09, 2026-08-28]
+        notification: 2026-10-14
+        camera_ready: 2026-11-02
+        note: The abstract deadline is the paper enrollment in OpenReview. First decisions (accept, revise and resubmit, or reject) came out Aug 9; revised papers with a rebuttal were due Aug 28.
+      - name: Round 2
+        abstract: 2026-08-21
+        paper: 2026-08-28
+        notification: 2026-10-14
+        camera_ready: 2026-11-02
+        note: The abstract deadline is the paper enrollment in OpenReview. Round 2 has no rebuttal.

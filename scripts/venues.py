@@ -25,9 +25,14 @@ AREAS = {
     "nlp": "NLP",
     "dm": "Data mining & IR",
     "db": "Databases",
+    "ro": "Robotics",
+    "fair": "Fairness & ethics",
 }
-# "unranked": the venue is not in CORE 2023 at all (COLM was first held in 2024)
-RANKS = ("A*", "A", "unranked")
+# ranks from ICORE 2026 (the CORE ranking, renamed). The site lists A* and A venues plus a few
+# major venues below that: "unranked" when ICORE 2026 does not rank them (COLM, CoRL, RSS, FAccT,
+# EAAMO), or their lower rank (AIES is C). Only A* and A are shown as a badge.
+RANKS = ("A*", "A", "B", "C", "unranked")
+BADGE_RANKS = ("A*", "A")
 FORMATS = ("in-person", "hybrid", "virtual")
 POINT_PHASES = ("abstract", "paper", "commitment", "notification", "camera_ready")
 SUBMISSION_PHASES = ("abstract", "paper")
@@ -140,7 +145,7 @@ def validate(venue_id: str, v: dict) -> list[str]:
     if v.get("area") not in AREAS:
         errors.append(f"{venue_id}.area: must be one of {', '.join(AREAS)}")
     if v.get("rank") not in RANKS:
-        errors.append(f"{venue_id}.rank: must be one of {', '.join(RANKS)} (CORE 2023)")
+        errors.append(f"{venue_id}.rank: must be one of {', '.join(RANKS)} (ICORE 2026)")
     _check_url(v.get("url"), f"{venue_id}.url", errors)
     if v.get("every_years", 1) not in (1, 2):
         errors.append(f"{venue_id}.every_years: must be 1 or 2")

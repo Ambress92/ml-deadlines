@@ -43,10 +43,16 @@ h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
 /* native menus, so phones open their own picker; the arrow is drawn here so it follows the theme */
 .pick{position:relative; display:inline-flex}
-.pick select{appearance:none; -webkit-appearance:none; font:600 13px var(--sans); color:var(--ink); background:var(--surface-2); border:0; border-radius:8px; padding:9px 32px 9px 13px; cursor:pointer}
+.pick select,.pick>button{appearance:none; -webkit-appearance:none; font:600 13px var(--sans); color:var(--ink); background:var(--surface-2); border:0; border-radius:8px; padding:9px 32px 9px 13px; cursor:pointer}
 .pick select option{background:var(--surface); color:var(--ink)}
 .pick::after{content:""; position:absolute; right:13px; top:50%; width:6px; height:6px; margin-top:-5px; border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted); transform:rotate(45deg); pointer-events:none}
-.pick.off select{opacity:.45}
+.pick.off select,.pick.off>button{opacity:.45}
+.pick>button{text-align:left; white-space:nowrap}
+.area-pop{position:absolute; top:calc(100% + 6px); left:0; z-index:40; background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.14); padding:6px; min-width:210px; display:flex; flex-direction:column}
+.area-pop label{display:flex; gap:9px; align-items:center; font:500 13px var(--sans); color:var(--ink); padding:7px 10px; border-radius:5px; cursor:pointer; white-space:nowrap}
+.area-pop label:hover{background:var(--surface-2)}
+.area-pop label.all{font-weight:600; border-bottom:1px solid var(--line); border-radius:5px 5px 0 0; margin-bottom:4px; padding-bottom:9px}
+.area-pop input{accent-color:var(--accent); margin:0}
 .search{position:relative; display:inline-flex; align-items:center}
 .search svg{position:absolute; left:10px; width:14px; height:14px; color:var(--faint); pointer-events:none}
 .search input{font:500 13px var(--sans); color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px 8px 31px; width:230px}

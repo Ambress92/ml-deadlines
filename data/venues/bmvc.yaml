@@ -1,0 +1,23 @@
+name: BMVC
+full_name: British Machine Vision Conference
+area: cv
+rank: A
+url: https://www.bmva.org/bmvc
+edition_url_pattern: https://bmvc{year}.bmva.org/
+editions:
+  - year: 2026
+    url: https://bmvc2026.bmva.org/
+    cfp_url: https://bmvc2026.bmva.org/calls/call-for-papers/
+    source: https://bmvc2026.bmva.org/dates/
+    last_verified: 2026-10-14
+    location: {city: Lancaster, country: UK}
+    format: in-person
+    start: 2026-11-23
+    end: 2026-11-26
+    rounds:
+      - abstract: 2026-05-22
+        paper: 2026-05-29
+        rebuttal: [2026-07-03, 2026-07-10]
+        notification: 2026-08-07
+        camera_ready: 2026-08-28
+        note: Supplementary material was due with the paper.

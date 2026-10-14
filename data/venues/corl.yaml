@@ -1,0 +1,24 @@
+name: CoRL
+full_name: Conference on Robot Learning
+area: ro
+rank: unranked
+url: https://www.corl.org
+edition_url_pattern: https://{year}.corl.org/
+notes: ICORE 2026 lists CoRL as unranked.
+editions:
+  - year: 2026
+    url: https://2026.corl.org/
+    cfp_url: https://2026.corl.org/contributions/call-for-papers
+    source: https://2026.corl.org/contributions/instruction-for-authors
+    last_verified: 2026-10-14
+    location: {city: Austin, country: USA}
+    start: 2026-11-09
+    end: 2026-11-12
+    notes: Main conference Nov 9-11, workshops Nov 12.
+    rounds:
+      - abstract: 2026-05-25
+        paper: 2026-05-28
+        rebuttal: [2026-08-04, 2026-08-11]
+        notification: 2026-09-04
+        camera_ready: 2026-10-12
+        note: Supplementary material was due Jun 4. The rebuttal runs from the release of the reviews to the rebuttal deadline.

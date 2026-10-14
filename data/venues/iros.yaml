@@ -1,0 +1,30 @@
+name: IROS
+full_name: IEEE/RSJ International Conference on Intelligent Robots and Systems
+area: ro
+rank: A
+url: https://www.ieee-ras.org/conferences-workshops/financially-co-sponsored/iros/
+edition_url_pattern: https://{year}.ieee-iros.org/
+editions:
+  - year: 2026
+    url: https://2026.ieee-iros.org/
+    cfp_url: https://2026.ieee-iros.org/contribute/call-for-papers/
+    source: https://2026.ieee-iros.org/about/important-dates/
+    last_verified: 2026-10-14
+    location: {city: Pittsburgh, country: USA}
+    start: 2026-09-27
+    end: 2026-10-01
+    timezone: America/Los_Angeles
+    notes: The dates page gives no time zone; the call for papers uses PST and the submission site (PaperCept) says all deadlines are Pacific time.
+    rounds:
+      - paper: 2026-03-02
+        notification: 2026-06-16
+        camera_ready: 2026-07-16
+        note: Submissions could be modified, but not started, until Mar 5. There is no RA-L+IROS option.
+  - year: 2027
+    url: https://2027.ieee-iros.org/
+    source: https://2027.ieee-iros.org/
+    last_verified: 2026-10-14
+    location: {city: Florence, country: Italy}
+    start: 2027-09-27
+    end: 2027-10-01
+    notes: Call for papers not published yet.

@@ -21,7 +21,7 @@ A public website that lists the deadlines, dates and locations of the main A*/A 
 | Data mining / IR / web | KDD, ICDM, WSDM, SIGIR, WWW, CIKM, ECML-PKDD |
 | Databases | SIGMOD, ICDE, VLDB |
 
-Robotics venues are out of scope. Ranks must be checked against the CORE 2023 portal when the data is collected.
+Robotics venues were out of scope at first. In October 2026 the site added a Robotics area (ICRA, IROS, CoRL, RSS) three vision venues (WACV, BMVC, MICCAI) and a Fairness & ethics area (FAccT, AIES, EAAMO), and moved from the CORE 2023 ranks to ICORE 2026. README.md has the current list.
 
 ## Views and sorting
 
