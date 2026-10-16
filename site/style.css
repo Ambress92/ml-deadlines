@@ -34,7 +34,7 @@ header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space
 h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-.02em; margin:0; line-height:1.1}
 /* the subtitle sits beside the title when it fits, and below it otherwise */
 .titles{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 18px}
-.sub{color:var(--muted); margin:0}
+.tagline{color:var(--muted); margin:0}
 .notice{font-size:13px; color:var(--muted); background:var(--surface-2); border-radius:6px; padding:8px 12px}
 .notice strong{color:var(--ink); font-weight:600}
 
@@ -189,7 +189,7 @@ footer a:hover{color:var(--accent)}
 @media (max-width:640px){
   :root{--axish:30px}
   .wrap{padding-inline:14px}
-  .sub{display:none}  /* phones show only the title */
+  .tagline{display:none}  /* phones show only the title */
   /* controls: view and search on the first line, the menus below */
   .controls{gap:10px}
   .search{order:1; flex:1 1 150px}
