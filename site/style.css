@@ -64,7 +64,8 @@ h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-
 button:focus-visible,select:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 
 /* rolling strip */
-.rolling{display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; border:1px dashed var(--line); border-radius:8px; padding:10px 14px; background:var(--surface)}
+.rolling{display:grid; grid-template-columns:auto auto auto 1fr auto; align-items:center; gap:8px 20px; border:1px dashed var(--line); border-radius:8px; padding:10px 14px; background:var(--surface)}
+.rolling .rv{display:contents}  /* on desktop each venue's parts are cells of the strip's grid */
 .rolling .lbl{font:600 11px var(--sans); text-transform:uppercase; letter-spacing:.08em; color:var(--muted)}
 .rolling .ven{font-family:var(--display); font-weight:700; font-size:15px}
 .rolling .ven a{color:inherit; text-decoration:none; border-bottom:1px solid var(--line)}
@@ -190,6 +191,14 @@ footer a:hover{color:var(--accent)}
   :root{--axish:30px}
   .wrap{padding-inline:14px}
   .tagline{display:none}  /* phones show only the title */
+  /* the strip stacks: one block per venue, with its name and calendar button on the first line */
+  .rolling{display:flex; flex-direction:column; align-items:stretch; gap:10px}
+  .rolling .lbl:empty{display:none}
+  .rolling .rv{display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px}
+  .rolling .ven{flex:1 1 calc(100% - 40px); order:1}
+  .rolling .rv .icon-btn{order:2}
+  .rolling .next{order:3}
+  .rolling .then{order:4}
   /* controls: view and search on the first line, the menus below */
   .controls{gap:10px}
   .search{order:1; flex:1 1 150px}

@@ -8,7 +8,7 @@ Submission deadlines, review phases, dates and locations of the main A*/A confer
 - **List view.** Live countdowns in your local time, with the official time (usually AoE) next to each one.
 - **Calendar sync.** Subscribe to the venues you care about in Google Calendar, Apple Calendar or Outlook. Subscribed calendars update when dates change.
 - **Estimated dates.** When a venue has not announced its next edition yet, the site shows last year's dates shifted forward, clearly marked as estimated.
-- **Rolling deadlines.** Monthly venues such as VLDB appear in a separate strip, so they do not always sit at the top of the list.
+- **Rolling deadlines.** Venues with frequent deadlines, VLDB (monthly) and SIGMOD (four rounds a year), appear in a separate strip, so they do not always sit at the top of the list.
 
 Every date comes from the official conference website, which each entry links to, together with the date it was last checked.
 

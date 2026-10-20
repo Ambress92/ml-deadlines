@@ -51,6 +51,14 @@ rolling:
   note: text shown on hover
 ```
 
+Venues with many rounds a year (SIGMOD) keep their `rounds` but get a `strip` block instead, which moves them from the timeline to the same strip. The strip lists their coming paper deadlines; estimated rounds are marked with a tilde.
+
+```yaml
+strip:
+  label: Four rounds a year     # shown next to the name
+  note: text shown on hover
+```
+
 ## Estimates
 
 The build fills gaps in two ways, and marks everything it fills as estimated on the site and in the calendars:

@@ -5,6 +5,8 @@ rank: A*
 url: https://sigmod.org
 edition_url_pattern: https://{year}.sigmod.org/
 notes: Each round also has a revised-paper deadline and a final notification, listed in the round notes.
+strip:
+  label: Four rounds a year
 editions:
   - year: 2027
     url: https://2027.sigmod.org/

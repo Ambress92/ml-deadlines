@@ -66,6 +66,8 @@ def to_json(venues: list[dict], now: dt.datetime) -> dict:
         rolling = None
         if v["rolling"]:
             rolling = {**v["rolling"], "dates": [ms(d) for d in v["rolling"]["dates"]]}
+            if "abstracts" in rolling:
+                rolling["abstracts"] = [d and ms(d) for d in rolling["abstracts"]]
         out.append({**{k: v[k] for k in ("id", "name", "full_name", "area", "area_label", "rank", "url", "notes")},
                     "editions": editions, "events": events, "rolling": rolling})
     return {"generated": now.isoformat(timespec="minutes"), "repo": REPO_URL, "venues": out}

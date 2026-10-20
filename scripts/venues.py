@@ -47,12 +47,14 @@ PHASE_LABELS = {
 }
 
 VENUE_KEYS = {"name", "full_name", "area", "rank", "url", "every_years", "irregular",
-              "edition_url_pattern", "rolling", "editions", "notes"}
+              "edition_url_pattern", "rolling", "strip", "editions", "notes"}
 EDITION_KEYS = {"year", "url", "cfp_url", "location", "format", "start", "end",
                 "timezone", "estimated", "last_verified", "source", "rounds", "notes"}
 ROUND_KEYS = {"name", "abstract", "paper", "rebuttal", "commitment", "notification",
               "camera_ready", "estimated", "note"}
 ROLLING_KEYS = {"every", "day", "time", "timezone", "notification_days", "label", "note"}
+# a venue with many rounds a year (SIGMOD) keeps its rounds but is shown in the rolling strip
+STRIP_KEYS = {"label", "note"}
 
 AOE = dt.timezone(dt.timedelta(hours=-12), "AoE")
 
@@ -165,6 +167,13 @@ def validate(venue_id: str, v: dict) -> list[str]:
             parse_tz(rolling.get("timezone", "AoE"))
         except ValidationError as e:
             errors.append(f"{venue_id}.rolling.timezone: {e}")
+
+    strip = v.get("strip")
+    if strip is not None and _check_keys(strip, STRIP_KEYS, f"{venue_id}.strip", errors):
+        if not strip.get("label"):
+            errors.append(f"{venue_id}.strip.label: required (shown next to the name)")
+        if rolling is not None:
+            errors.append(f"{venue_id}.strip: a venue has either rolling or strip, not both")
 
     editions = v.get("editions") or []
     if not isinstance(editions, list) or not editions:
@@ -380,9 +389,10 @@ def rolling_dates(v: dict, now: dt.datetime, count: int = 14) -> list[dt.datetim
 def resolve(v: dict, now: dt.datetime) -> dict:
     """One venue as concrete events. Deadlines carry an aware datetime in
     `at`; ranges (rebuttal, conference) carry `start` and `end` dates."""
-    editions, events = [], []
+    editions, events, tz_names = [], [], {}
     for ed in with_estimate(v, now):
         tz_name = ed.get("timezone", "AoE")
+        tz_names[ed["year"]] = tz_name
         tz = parse_tz(tz_name)
         est_ed = ed.get("estimated", False)
         loc = location_text(ed.get("location"))
@@ -431,5 +441,19 @@ def resolve(v: dict, now: dt.datetime) -> dict:
             "notification_days": r.get("notification_days"),
             "tz": r.get("timezone", "AoE"),
             "dates": rolling_dates(v, now),
+        }
+    if v.get("strip"):
+        # the strip lists the coming paper deadlines of the rounds, each with its abstract deadline
+        papers = sorted((e for e in events if e["type"] == "paper" and e["at"] > now), key=lambda e: e["at"])
+        abstracts = {(e["edition"], e["round"]): e["at"] for e in events if e["type"] == "abstract"}
+        out["rolling"] = {
+            "label": v["strip"]["label"],
+            "note": v["strip"].get("note"),
+            "notification_days": None,
+            "tz": tz_names[papers[0]["edition"]] if papers else "AoE",
+            "dates": [e["at"] for e in papers],
+            "abstracts": [abstracts.get((e["edition"], e["round"])) for e in papers],
+            "est": [e["estimated"] for e in papers],
+            "rounds": [f"{v['name']} {e['edition']}" + (f", {e['round'].lower()}" if e["round"] else "") for e in papers],
         }
     return out

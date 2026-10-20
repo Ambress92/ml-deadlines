@@ -314,17 +314,28 @@
 
   function renderRolling(now) {
     const el = document.getElementById("rolling");
-    const items = DATA.venues.filter(v => v.rolling && shown(v));
+    const nextOf = v => v.rolling.dates.find(t => t > now) ?? Infinity;
+    const items = DATA.venues.filter(v => v.rolling && shown(v)).sort((a, b) => nextOf(a) - nextOf(b));
     el.hidden = !items.length;
-    el.innerHTML = `<span class="lbl">Rolling submissions</span>` + items.map(v => {
-      const r = v.rolling, dates = r.dates.filter(t => t > now);
+    // one row per venue; the first row carries the strip's label, the others an empty cell in its place
+    el.innerHTML = items.map((v, i) => {
+      const r = v.rolling;
+      // monthly venues (VLDB) have only dates; venues with rounds (SIGMOD) also say which round,
+      // its abstract deadline, and whether the round is estimated
+      const dates = r.dates.map((t, k) => ({t, est: r.est?.[k], abs: r.abstracts?.[k], round: r.rounds?.[k]})).filter(d => d.t > now);
       if (!dates.length) return "";
-      const officialFmt = new Intl.DateTimeFormat(LOCALE, {month: "short", day: "numeric", timeZone: r.tz === "AoE" ? "Etc/GMT+12" : r.tz});
-      const fmt = t => officialFmt.format(new Date(t));
-      const ms = dates[0] - now;
-      return `<span class="ven"><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.name)}</a><small>${esc(r.label)}</small></span>
-        <span class="next" ${tip(`${localFmt.format(new Date(dates[0]))} your time${r.note ? "\n" + r.note : ""}`)}>next <b>${fmt(dates[0])}</b> · <span class="cd ${urgency(ms)}" data-cd="${dates[0]}">${countdown(ms)}</span></span>
-        <span class="then">then ${dates.slice(1, 4).map(fmt).join(", ")}</span>${subButton(v, true)}`;
+      let officialFmt;
+      try { officialFmt = new Intl.DateTimeFormat(LOCALE, {month: "short", day: "numeric", timeZone: r.tz === "AoE" ? "Etc/GMT+12" : r.tz}); }
+      catch (e) { officialFmt = dayFmt; }
+      const fmt = d => (d.est ? "~" : "") + officialFmt.format(new Date(d.t));
+      const first = dates[0], ms = first.t - now;
+      const info = [`${localFmt.format(new Date(first.t))} your time`, first.round,
+                    first.abs && `Abstract due ${officialFmt.format(new Date(first.abs))}`,
+                    first.est && "Estimated from last year's dates", r.note].filter(Boolean).join("\n");
+      return `<span class="lbl">${i === 0 ? "Rolling submissions" : ""}</span><div class="rv">
+        <span class="ven"><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.name)}</a><small>${esc(r.label)}</small></span>
+        <span class="next" ${tip(info)}>next <b>${fmt(first)}</b> · <span class="cd ${urgency(ms)}" data-cd="${first.t}" data-prefix="${first.est ? "~" : ""}">${first.est ? "~" : ""}${countdown(ms)}</span></span>
+        <span class="then">then ${dates.slice(1, 4).map(fmt).join(", ")}</span>${subButton(v, true)}</div>`;
     }).join("");
   }
 
@@ -388,7 +399,7 @@
     let empty = state.areas && !state.areas.length ? "No area chosen. Pick one or more in the areas menu." : "No venues in these areas.";
     if (searching()) {
       const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
-      empty = rolling.length ? `${esc(rolling.join(", "))} takes submissions on a rolling basis, shown below.`
+      empty = rolling.length ? `${esc(rolling.join(" and "))} ${rolling.length > 1 ? "are" : "is"} in the rolling submissions, below.`
                              : `No conference matches “${esc(state.q.trim())}”.`;
     }
     document.getElementById("view").innerHTML = list.length
