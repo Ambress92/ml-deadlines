@@ -1,7 +1,7 @@
 // Renders the timeline and list views from the data embedded by scripts/build.py.
 (function () {
   const DATA = window.__DATA__;
-  const AREAS = [["ml", "Core ML"], ["ai", "General AI"], ["cv", "Vision"],
+  const AREAS = [["ml", "Core ML"], ["ai", "General AI"], ["cv", "CV"],
                  ["nlp", "NLP"], ["dm", "Data mining & IR"], ["db", "Databases"], ["ro", "Robotics"], ["fair", "Fairness & ethics"]];
   const AREA_KEYS = AREAS.map(a => a[0]);
   const SORTS = ["submission", "rebuttal", "decision", "conference"];

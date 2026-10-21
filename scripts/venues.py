@@ -21,7 +21,7 @@ VENUES_DIR = ROOT / "data" / "venues"
 AREAS = {
     "ml": "Core ML",
     "ai": "General AI",
-    "cv": "Vision",
+    "cv": "CV",
     "nlp": "NLP",
     "dm": "Data mining & IR",
     "db": "Databases",

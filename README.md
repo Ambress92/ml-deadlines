@@ -18,7 +18,7 @@ Every date comes from the official conference website, which each entry links to
 |---|---|
 | Core ML | NeurIPS, ICML, ICLR, AISTATS, UAI, COLT |
 | General AI | AAAI, IJCAI, ECAI, AAMAS |
-| Vision | CVPR, ICCV, ECCV, WACV, BMVC, MICCAI |
+| CV | CVPR, ICCV, ECCV, WACV, BMVC, MICCAI |
 | NLP | ACL, EMNLP, NAACL, COLM |
 | Data mining & IR | KDD, ICDM, WSDM, SIGIR, WWW, CIKM, ECML-PKDD |
 | Databases | SIGMOD, ICDE, VLDB |
