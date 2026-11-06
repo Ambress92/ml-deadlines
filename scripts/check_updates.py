@@ -33,7 +33,8 @@ STALE_DAYS = 30
 SOON_DAYS = 30
 UA = "Mozilla/5.0 (ml-deadlines update check; +https://github.com/Ambress92/ml-deadlines)"
 MONTHS = r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
-DATE_LINE = re.compile(rf"\b({MONTHS})[a-z]*\.?\s+\d|\d\s+({MONTHS})|\d{{4}}-\d{{2}}-\d{{2}}|\d{{1,2}}/\d{{1,2}}/\d{{2,4}}", re.I)
+# "14 May" and "14th May" both count ("10th-14th May, 2027" on the WWW call)
+DATE_LINE = re.compile(rf"\b({MONTHS})[a-z]*\.?\s+\d|\d(?:st|nd|rd|th)?\s+({MONTHS})|\d{{4}}-\d{{2}}-\d{{2}}|\d{{1,2}}/\d{{1,2}}/\d{{2,4}}", re.I)
 BLOCK_TAGS = {"p", "div", "li", "tr", "td", "th", "br", "h1", "h2", "h3", "h4", "h5", "h6", "section", "table", "dt", "dd"}
 
 

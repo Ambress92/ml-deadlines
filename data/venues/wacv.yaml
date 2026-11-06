@@ -9,11 +9,11 @@ editions:
     url: https://wacv.thecvf.com/Conferences/2027
     cfp_url: https://wacv.thecvf.com/Conferences/2027/CallForPapers
     source: https://wacv.thecvf.com/Conferences/2027/Dates
-    last_verified: 2026-10-14
+    last_verified: 2026-11-06
     location: {city: Lake Buena Vista, country: USA}
     start: 2027-01-04
     end: 2027-01-08
-    notes: The call for papers still gives Aug 7 and Oct 9 for the decisions; the dates page and the home page give Aug 9 and Oct 14, used here.
+    notes: The call for papers and the author guidelines still give Aug 7 and Oct 9 for the decisions; the dates page gives Aug 9 and Oct 14, used here.
     rounds:
       - name: Round 1
         abstract: 2026-06-19

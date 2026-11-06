@@ -47,7 +47,7 @@ rolling:
   time: "17:00"
   timezone: America/Los_Angeles
   notification_days: 45
-  label: PVLDB Vol. 20, 1st of every month
+  label: PVLDB, 1st of every month
   note: text shown on hover
 ```
 

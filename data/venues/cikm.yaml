@@ -8,7 +8,7 @@ editions:
     url: https://cikm2026.diag.uniroma1.it/
     cfp_url: https://cikm2026.diag.uniroma1.it/full-research-papers/
     source: https://cikm2026.diag.uniroma1.it/full-research-papers/
-    last_verified: 2026-09-23
+    last_verified: 2026-11-06
     location: {city: Rome, country: Italy}
     start: 2026-11-07
     end: 2026-11-11
@@ -17,3 +17,8 @@ editions:
         paper: 2026-05-23
         notification: 2026-08-07
         camera_ready: 2026-08-23
+  - year: 2027
+    source: http://www.cikmconference.org/
+    last_verified: 2026-11-06
+    location: {city: Sydney, country: Australia}
+    notes: The series home page names Sydney as the host. Dates and website not announced yet.

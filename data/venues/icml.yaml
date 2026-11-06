@@ -4,17 +4,27 @@ area: ml
 rank: A*
 url: https://icml.cc
 edition_url_pattern: https://icml.cc/Conferences/{year}
-notes: ICML 2027 will be in South America; the city is not announced (icml.cc/Conferences/FutureMeetings).
+notes: ICML 2028 will be in the eastern United States; the city is not announced (icml.cc/Conferences/FutureMeetings).
 editions:
   - year: 2026
     url: https://icml.cc/Conferences/2026
     source: https://icml.cc/Conferences/2026/Dates
-    last_verified: 2026-09-23
+    last_verified: 2026-11-06
     location: {city: Seoul, country: South Korea}
     start: 2026-07-06
     end: 2026-07-11
     rounds:
       - abstract: 2026-01-23
         paper: 2026-01-28
+        rebuttal: [2026-03-24, 2026-03-30]
         notification: 2026-04-30
-        note: Author response due Mar 30, 2026.
+        note: The rebuttal runs from the release of the reviews to the author response deadline; the author-reviewer discussion ended Apr 7.
+  - year: 2027
+    url: https://icml.cc/Conferences/2027
+    cfp_url: https://icml.cc/Conferences/2027/CallForPapers
+    source: https://icml.cc/Conferences/2027
+    last_verified: 2026-11-06
+    location: {city: Rio de Janeiro, country: Brazil}
+    start: 2027-07-31
+    end: 2027-08-06
+    notes: Call for papers not published yet.

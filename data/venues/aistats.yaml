@@ -7,8 +7,9 @@ edition_url_pattern: https://virtual.aistats.org/Conferences/{year}
 editions:
   - year: 2027
     url: https://aistats.org/aistats2027/
+    cfp_url: https://virtual.aistats.org/Conferences/2027/CallForPapers
     source: https://virtual.aistats.org/Conferences/2027/Dates
-    last_verified: 2026-10-09
+    last_verified: 2026-11-06
     location: {city: Montréal, country: Canada}
     start: 2027-05-03
     end: 2027-05-06
@@ -16,5 +17,5 @@ editions:
     rounds:
       - abstract: 2026-09-29
         paper: 2026-10-06
-        rebuttal: [2026-11-23, 2026-12-03]
+        rebuttal: [2026-11-16, 2026-12-03]
         notification: 2027-01-20

@@ -12,10 +12,10 @@ editions:
     url: https://2027.sigmod.org/
     cfp_url: https://2027.sigmod.org/calls_papers_sigmod_research.shtml
     source: https://2027.sigmod.org/calls_papers_important_dates.shtml
-    last_verified: 2026-10-09
+    last_verified: 2026-11-06
     location: {city: Huntington Beach, country: USA}
     start: 2027-06-13
-    end: 2027-06-19
+    end: 2027-06-18
     rounds:
       - name: Round 1
         abstract: 2026-01-10

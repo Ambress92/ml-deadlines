@@ -21,8 +21,9 @@ editions:
         camera_ready: 2026-05-20
   - year: 2027
     url: https://2027.ijcai.org/
-    source: https://2027.ijcai.org/
-    last_verified: 2026-10-09
+    cfp_url: https://2027.ijcai.org/ijcai-2027-call-for-papers-main-track/
+    source: https://2027.ijcai.org/ijcai-2027-call-for-papers-main-track/
+    last_verified: 2026-11-06
     location:
       - {city: Kyoto, country: Japan}
       - {city: Hengqin, country: China}
@@ -32,4 +33,7 @@ editions:
     rounds:
       - abstract: 2027-01-04
         paper: 2027-01-11
+        rebuttal: [2027-03-30, 2027-04-02]
         notification: 2027-04-21
+        camera_ready: 2027-05-07
+        note: Summary reject notifications are sent on Feb 25, 2027.

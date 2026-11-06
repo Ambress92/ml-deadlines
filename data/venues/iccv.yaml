@@ -20,9 +20,9 @@ editions:
         note: Rebuttals were due May 16, 2025.
   - year: 2027
     url: https://iccv.thecvf.com/Conferences/2027
-    source: https://iccv.thecvf.com/Conferences/2027
-    last_verified: 2026-10-09
+    source: https://iccv.thecvf.com/Conferences/2027/Dates
+    last_verified: 2026-11-06
     location: {city: Hong Kong, country: China}
-    start: 2027-10-02
-    end: 2027-10-08
-    notes: Call for papers not published yet.
+    start: 2027-10-03
+    end: 2027-10-07
+    notes: Call for papers not published yet. One line on the home page still says Oct 2-8; its header and the dates page say Oct 3-7.

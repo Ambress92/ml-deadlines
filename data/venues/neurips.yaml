@@ -9,18 +9,17 @@ editions:
   - year: 2026
     url: https://neurips.cc/Conferences/2026
     source: https://neurips.cc/Conferences/2026/Dates
-    last_verified: 2026-10-09
+    last_verified: 2026-11-06
     location:
       - {city: Sydney, country: Australia}
       - {city: Atlanta, country: USA}
       - {city: Paris, country: France}
     start: 2026-12-06
     end: 2026-12-13
-    notes: >-
-      Held in three cities. Sydney runs Dec 6-13; Atlanta and Paris run Dec 9-13.
-      No camera-ready date is published yet.
+    notes: Held in three cities. Sydney runs Dec 6-12; Atlanta and Paris run Dec 9-13.
     rounds:
       - abstract: 2026-05-04
         paper: 2026-05-06
         rebuttal: [2026-07-27, 2026-08-03]
         notification: 2026-09-24
+        camera_ready: 2026-11-06

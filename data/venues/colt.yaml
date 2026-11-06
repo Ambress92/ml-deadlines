@@ -18,9 +18,13 @@ editions:
         notification: 2026-05-04
   - year: 2027
     url: https://learningtheory.org/colt2027/
+    cfp_url: https://learningtheory.org/colt2027/cfp.html
     source: https://learningtheory.org/colt2027/
-    last_verified: 2026-10-09
+    last_verified: 2026-11-06
     location: {city: Tokyo, country: Japan}
     start: 2027-06-28
     end: 2027-07-02
-    notes: Deadlines are listed as "Date TBD".
+    rounds:
+      - paper: 2027-01-29
+        rebuttal: [2027-03-29, 2027-04-02]
+        notification: 2027-05-03
