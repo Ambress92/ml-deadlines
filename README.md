@@ -48,4 +48,4 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python scripts/check_updates.py        # report official pages whose dates changed
 ```
 
-The build is a single Python script with no framework. It writes a static page, a JSON file and one `.ics` calendar per venue into `dist/`, which GitHub Actions deploys to GitHub Pages on every push and once a day.
+The build is a single Python script with no framework. It writes a static page, a JSON file, one `.ics` calendar per venue and one plain page per venue (`dist/<id>/index.html`, for search engines) into `dist/`, which GitHub Actions deploys to GitHub Pages on every push and once a day.

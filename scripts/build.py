@@ -6,7 +6,8 @@
     python scripts/build.py --serve --lan   same, reachable from a phone on the same Wi-Fi
 
 Output: dist/index.html (data embedded), dist/data.json, dist/ics/<id>.ics
-for each venue and dist/ics/all.ics.
+for each venue and dist/ics/all.ics, and dist/<id>/index.html, one plain page
+per conference for search engines.
 """
 from __future__ import annotations
 
@@ -18,6 +19,8 @@ import http.server
 import json
 import shutil
 import sys
+import urllib.parse
+from html import escape as h
 
 from venues import BADGE_RANKS, PHASE_LABELS, ROOT, load_all, resolve
 
@@ -104,12 +107,206 @@ def static_html(venues: list[dict], now: dt.datetime) -> str:
         year = subs[0]["edition"] if subs else (conf["edition"] if conf else v["editions"][-1]["year"])
         rank = f"{v['rank']}, " if v["rank"] in BADGE_RANKS else ""
         rows.append((subs[0]["at"] if subs else now + dt.timedelta(days=4000),
-                     f"<li><a href=\"{v['url']}\">{v['name']} {year}</a> ({rank}{v['area_label']}): "
+                     f"<li><a href=\"{v['id']}/\">{v['name']} {year}</a> ({rank}{v['area_label']}): "
                      f"{'; '.join(parts) or 'dates not announced'}.</li>"))
     items = "\n".join(html for _, html in sorted(rows, key=lambda r: r[0]))
     return ('<noscript><p>This page uses JavaScript for the timeline and the countdowns. '
             'The dates below are the same data.</p></noscript>\n'
             f'<ul class="static-list">\n{items}\n</ul>')
+
+
+# ------------------------------------------------------ conference pages
+# One page per conference, at <id>/, with every date as plain text. People search for
+# "CVPR 2027 deadline", and these pages give search engines (and Claude's web search) a
+# page that answers exactly that.
+
+PAGE_PHASES = {"abstract": "Abstract deadline", "paper": "Paper deadline", "rebuttal": "Rebuttal",
+               "commitment": "ARR commitment deadline", "notification": "Notification",
+               "camera_ready": "Camera-ready deadline"}
+FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800'
+         '&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">')
+GOATCOUNTER = '<script data-goatcounter="https://ml-deadlines.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>'
+# "in 12 days" is filled in by the reader's browser, so the page never shows a stale count
+DAYS_LEFT = ('<script>for(const el of document.querySelectorAll("[data-t]")){const d=(+el.dataset.t-Date.now())/864e5;'
+             'el.textContent=d<0?"passed":d<1?"less than a day":"in "+Math.ceil(d)+" days";}</script>')
+
+
+def _rank_text(v: dict) -> str:
+    return f"ICORE 2026 rank {v['rank']}" if v["rank"] != "unranked" else "not ranked by ICORE 2026"
+
+
+def _deadline_text(e: dict) -> str:
+    at = e["at"]
+    return f"{at:%a}, {at:%b} {at.day}, {at.year}, {at:%H:%M} {e['tz']}"
+
+
+def _page_editions(v: dict, now: dt.datetime) -> list[dict]:
+    """The editions a page shows: those not over yet (the next one is often an estimate)."""
+    today = now.date()
+    def upcoming(ed):
+        if ed["end"]:
+            return ed["end"] >= today
+        return any(e["edition"] == ed["year"] and "at" in e and e["at"] > now for e in v["events"])
+    return sorted((ed for ed in v["editions"] if upcoming(ed)), key=lambda ed: ed["year"]) or [v["editions"][-1]]
+
+
+def _edition_section(v: dict, ed: dict, now: dt.datetime) -> str:
+    name = f"{v['name']} {ed['year']}"
+    when = _fmt_range(ed["start"], ed["end"]) if ed["start"] else "Dates not announced"
+    meta = f"{when} · {ed['location'] or 'location not announced'}" + (f" · {ed['format']}" if ed.get("format") else "")
+    events = sorted((e for e in v["events"] if e["edition"] == ed["year"] and e["type"] != "conference"),
+                    key=lambda e: e["at"] if "at" in e else dt.datetime.combine(e["start"], dt.time(), dt.timezone.utc))
+    rows = []
+    for e in events:
+        label = PAGE_PHASES[e["type"]] + (f" ({e['round']})" if e["round"] else "")
+        est = ' <span class="est">estimated</span>' if e["estimated"] and not ed["estimated"] else ""
+        note = f'<span class="note">{h(e["note"])}</span>' if e.get("note") and e["type"] in ("paper", "abstract") else ""
+        if "at" in e:
+            past = e["at"] < now
+            left = f'<td class="left" data-t="{int(e["at"].timestamp() * 1000)}">{"passed" if past else ""}</td>'
+            date = h(_deadline_text(e))
+        else:
+            past = e["end"] < now.date()
+            start_ms = int(dt.datetime.combine(e["start"], dt.time(), dt.timezone.utc).timestamp() * 1000)
+            left = ('<td class="left">passed</td>' if past else '<td class="left">under way</td>' if e["start"] <= now.date()
+                    else f'<td class="left" data-t="{start_ms}"></td>')
+            date = h(_fmt_range(e["start"], e["end"]))
+        rows.append(f'<tr{" class=past" if past else ""}><th>{h(label)}{est}{note}</th><td>{date}</td>{left}</tr>')
+    if not rows:
+        rows.append('<tr><th>Deadlines</th><td>Not announced yet</td><td class="left"></td></tr>')
+    if ed["estimated"]:
+        src = (f"Not announced yet. These dates are estimated from {h(v['name'])} {ed.get('based_on') or ed['year'] - 1}, "
+               "shifted forward by a year, and will be replaced by the official ones.")
+    else:
+        checked = f", checked on {ed['last_verified']:%b} {ed['last_verified'].day}, {ed['last_verified'].year}" if ed["last_verified"] else ""
+        src = f'Dates from the <a href="{h(ed["source"] or ed["url"] or v["url"])}">official {h(v["name"])} page</a>{checked}.'
+        if ed.get("notes"):
+            src += f" {h(ed['notes'])}"
+    tag = ' <span class="est-tag">estimated</span>' if ed["estimated"] else ""
+    return (f'<section class="ved" id="{ed["year"]}">\n<h2>{h(name)}{tag}</h2>\n<p class="meta">{h(meta)}</p>\n'
+            f'<table class="dates"><tbody>\n' + "\n".join(rows) + f'\n</tbody></table>\n<p class="src">{src}</p>\n</section>')
+
+
+def _rolling_section(v: dict, now: dt.datetime) -> str:
+    """Monthly venues (VLDB) have a deadline rule instead of rounds."""
+    r = v["rolling"]
+    dates = [d for d in r["dates"] if d > now][:6]
+    rows = "\n".join(f'<tr><th>Submission deadline</th><td>{h(f"{d:%a}, {d:%b} {d.day}, {d.year}, {d:%H:%M} {d.tzname()}")}</td>'
+                     f'<td class="left" data-t="{int(d.timestamp() * 1000)}"></td></tr>' for d in dates)
+    note = f'<p class="src">{h(r["note"])}</p>' if r.get("note") else ""
+    return (f'<section class="ved">\n<h2>Rolling submissions</h2>\n<p class="meta">{h(r["label"])}</p>\n'
+            f'<table class="dates"><tbody>\n{rows}\n</tbody></table>\n{note}\n</section>')
+
+
+def venue_page(v: dict, venues: list[dict], now: dt.datetime, css_tag: str) -> str:
+    eds = _page_editions(v, now)
+    years = " and ".join(str(ed["year"]) for ed in eds[:2])
+    url = f"{SITE_URL}{v['id']}/"
+    title = f"{v['name']} {years} deadlines and dates | ML Deadlines"
+
+    # the description names the dates people search for: the next paper deadline, the next decision,
+    # the next conference, whichever editions they belong to
+    shown = {ed["year"] for ed in eds}
+    def upcoming(kind):
+        return min((e for e in v["events"] if e["edition"] in shown and e["type"] == kind and "at" in e and e["at"] > now),
+                   key=lambda e: e["at"], default=None)
+    bits = []
+    for kind, label in (("paper", "paper deadline"), ("notification", "notification")):
+        e = upcoming(kind)
+        if e:
+            bits.append(f"{v['name']} {e['edition']} {label} {e['at']:%b} {e['at'].day}, {e['at'].year} {e['tz']}"
+                        + (" (estimated)" if e["estimated"] else ""))
+    main = next((ed for ed in eds if ed["start"]), eds[0])
+    if v["rolling"] and "rounds" not in v["rolling"]:
+        nxt = next((d for d in v["rolling"]["dates"] if d > now), None)
+        if nxt:
+            bits.insert(0, f"{v['name']} monthly submission deadline, next {nxt:%b} {nxt.day}, {nxt.year}")
+    if main["start"]:
+        bits.append(f"{v['name']} {main['year']} conference {_fmt_range(main['start'], main['end'])}"
+                    + (f", {main['location']}" if main["location"] else "") + (" (estimated)" if main["estimated"] else ""))
+    desc = ("; ".join(bits) + ". " if bits else f"{v['name']} {years}: dates not announced yet. ") + \
+        f"Deadlines and review dates of the {v['full_name']} from its official pages, with estimates marked."
+
+    sections = [_edition_section(v, ed, now) for ed in eds]
+    if v["rolling"] and "rounds" not in v["rolling"]:
+        sections.insert(0, _rolling_section(v, now))
+
+    ics = f"{SITE_URL}ics/{v['id']}.ics"
+    webcal = "webcal:" + ics.split(":", 1)[1]
+    cal = (f'<section class="vsec">\n<h2>Add {h(v["name"])} to your calendar</h2>\n'
+           f'<p><a href="https://calendar.google.com/calendar/r?cid={urllib.parse.quote(webcal, safe="")}">Google Calendar</a> · '
+           f'<a href="{h(webcal)}">Apple Calendar or Outlook</a> · <a href="{h(ics)}" download>Download the .ics file</a></p>\n'
+           '<p class="small">A subscription updates itself when dates change or are announced.</p>\n</section>')
+    others = [o for o in venues if o["area"] == v["area"] and o["id"] != v["id"]]
+    related = (f'<section class="vsec">\n<h2>Other {h(v["area_label"])} conferences</h2>\n<p>'
+               + " · ".join(f'<a href="../{o["id"]}/">{h(o["name"])}</a>' for o in others)
+               + '</p>\n<p>All 37 conferences on one timeline: <a href="../">ML Deadlines</a></p>\n</section>') if others else ""
+
+    # schema.org events for announced editions with a known place, which search engines can read
+    ld = []
+    for ed in eds:
+        if ed["estimated"] or not ed["start"] or not ed["location"]:
+            continue
+        item = {"@context": "https://schema.org", "@type": "Event", "name": f"{v['name']} {ed['year']}",
+                "description": f"{v['full_name']} {ed['year']}", "startDate": ed["start"].isoformat(),
+                "endDate": ed["end"].isoformat(), "eventStatus": "https://schema.org/EventScheduled",
+                "location": {"@type": "Place", "name": ed["city"] or ed["location"], "address": ed["location"]}}
+        if ed.get("url"):
+            item["url"] = ed["url"]
+        mode = {"in-person": "Offline", "hybrid": "Mixed", "virtual": "Online"}.get(ed.get("format") or "")
+        if mode:
+            item["eventAttendanceMode"] = f"https://schema.org/{mode}EventAttendanceMode"
+        ld.append(item)
+    ld_html = (f'<script type="application/ld+json">{json.dumps(ld if len(ld) > 1 else ld[0]).replace("</", "<\\/")}</script>\n'
+               if ld else "")
+
+    series = f" {h(v['notes'])}" if v.get("notes") else ""
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{h(title)}</title>
+<meta name="description" content="{h(desc)}">
+<link rel="canonical" href="{url}">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Deadlines">
+<meta property="og:title" content="{h(v['name'])} {years} deadlines and dates">
+<meta property="og:description" content="{h(desc)}">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="{SITE_URL}og.png">
+<meta name="twitter:card" content="summary_large_image">
+{FONTS}
+<link rel="stylesheet" href="../style.css?v={css_tag}">
+{ld_html}</head>
+<body>
+<div class="wrap vpage">
+<nav class="crumbs"><a href="../">ML Deadlines</a> <span aria-hidden="true">›</span> {h(v['name'])}</nav>
+<header class="vhead">
+<h1>{h(v['name'])} {years} deadlines and dates</h1>
+<p class="tagline">{h(v['full_name'])}. {h(v['area_label'])}, {h(_rank_text(v))}.{series}</p>
+</header>
+{chr(10).join(sections)}
+{cal}
+{related}
+<footer><span>Every date comes from the conference's official page. Data updated {now:%b} {now.day}, {now.year}.</span>
+<a href="{REPO_URL}/issues/new?template=update-dates.yml">Report a wrong date</a>
+<a href="{REPO_URL}">Source on GitHub</a></footer>
+</div>
+{DAYS_LEFT}
+{GOATCOUNTER}
+</body>
+</html>
+"""
+
+
+def conference_nav(venues: list[dict]) -> str:
+    """Links to every conference page, at the bottom of the home page."""
+    links = " ".join(f'<a href="{v["id"]}/">{h(v["name"])}</a>' for v in sorted(venues, key=lambda v: v["name"].lower()))
+    return f'<nav class="confnav" aria-label="Conference pages"><span>Conference pages:</span> {links}</nav>'
 
 
 # -------------------------------------------------------------------- ics
@@ -212,11 +409,15 @@ def build(now: dt.datetime) -> int:
     blob = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     page = page.replace("/*__DATA__*/null", blob)
     page = page.replace('<main id="view"></main>', f'<main id="view">\n{static_html(venues, now)}\n</main>')
+    page = page.replace('<nav id="confnav"></nav>', conference_nav(venues))
     # version tags make browsers fetch changed assets instead of a cached copy
-    for asset in ("style.css", "app.js"):
-        tag = hashlib.sha1((SITE_DIR / asset).read_bytes()).hexdigest()[:8]
+    tags = {asset: hashlib.sha1((SITE_DIR / asset).read_bytes()).hexdigest()[:8] for asset in ("style.css", "app.js")}
+    for asset, tag in tags.items():
         page = page.replace(f'"{asset}"', f'"{asset}?v={tag}"')
     (DIST / "index.html").write_text(page)
+    for v in venues:
+        (DIST / v["id"]).mkdir()
+        (DIST / v["id"] / "index.html").write_text(venue_page(v, venues, now, tags["style.css"]))
     for asset in ("style.css", "app.js", "favicon.svg", "og.png"):
         shutil.copy(SITE_DIR / asset, DIST / asset)
     (DIST / ".nojekyll").write_text("")
@@ -224,10 +425,11 @@ def build(now: dt.datetime) -> int:
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"  <url><loc>{SITE_URL}</loc><lastmod>{now:%Y-%m-%d}</lastmod></url>\n"
-        "</urlset>\n")
+        + "".join(f"  <url><loc>{SITE_URL}{v['id']}/</loc><lastmod>{now:%Y-%m-%d}</lastmod></url>\n" for v in venues)
+        + "</urlset>\n")
 
     n_est = sum(1 for v in venues for e in v["editions"] if e["estimated"])
-    print(f"Built {len(venues)} venues ({n_est} estimated editions) into {DIST.relative_to(ROOT)}/")
+    print(f"Built {len(venues)} venues ({n_est} estimated editions) and their pages into {DIST.relative_to(ROOT)}/")
     return 0
 
 

@@ -6,7 +6,7 @@ A static website listing deadlines, dates and locations of 37 conferences in ML,
 
 - `data/venues/<id>.yaml`: one file per conference series. The format is in `data/SCHEMA.md`.
 - `scripts/venues.py`: loading, validation, time zones, and the automatic estimates.
-- `scripts/build.py`: validates and builds `dist/` (page, `data.json`, `.ics` calendars). Use `--check` to validate only and `--serve` for a local preview.
+- `scripts/build.py`: validates and builds `dist/` (page, `data.json`, `.ics` calendars, and one plain page per conference at `<id>/` for search engines). Use `--check` to validate only and `--serve` for a local preview.
 - `scripts/check_updates.py`: fetches the official pages and reports what changed. It never edits data.
 - `scripts/new_venue.py`: creates a template file for a new venue.
 - `site/`: page template, `app.js`, `style.css`. `site/og.png` is the link preview image; its source and the command to regenerate it are in `site/og/og.html`.
