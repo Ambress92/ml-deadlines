@@ -2,7 +2,7 @@
 
 This folder holds a remote [MCP](https://modelcontextprotocol.io) server that lets Claude answer questions about conference deadlines with the data from [ML Deadlines](https://ambress92.github.io/ml-deadlines/). It covers the same 37 conferences in machine learning, AI, NLP, computer vision, robotics, fairness, data mining and databases. Every date comes from the conference's official page, and estimated dates are marked as such.
 
-**Connector URL:** `https://ml-deadlines.antonio-ferra577.workers.dev/mcp`
+**Connector URL:** `https://ml-deadlines.ml-deadlines.workers.dev/mcp`
 
 ## Add it to Claude
 

@@ -278,8 +278,12 @@ export default {
       return new Response(`ML Deadlines connector for Claude. MCP endpoint: ${url.origin}/mcp\nSite: ${SITE}\n`,
         {headers: {"Content-Type": "text/plain; charset=utf-8", ...CORS}});
     }
-    // this server sends no server-initiated messages, so there is no event stream to open
-    if (request.method !== "POST") return new Response("Method not allowed", {status: 405, headers: {Allow: "POST, OPTIONS", ...CORS}});
+    // this server sends no server-initiated messages, so there is no event stream to open; the protocol
+    // asks for a 405 here, and the body explains the address to someone who opens it in a browser
+    if (request.method !== "POST") {
+      return new Response(`This is the address of the ML Deadlines connector for Claude.\n\nTo use it, add this address in Claude under Settings > Connectors > Add custom connector:\n${url.origin}/mcp\n\nThe deadlines themselves are at ${SITE}\n`,
+        {status: 405, headers: {Allow: "POST, OPTIONS", "Content-Type": "text/plain; charset=utf-8", ...CORS}});
+    }
     let body;
     try { body = await request.json(); } catch { return json(rpcError(null, -32700, "Parse error"), 400); }
     if (Array.isArray(body)) {
