@@ -49,3 +49,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
 The build is a single Python script with no framework. It writes a static page, a JSON file, one `.ics` calendar per venue and one plain page per venue (`dist/<id>/index.html`, for search engines) into `dist/`, which GitHub Actions deploys to GitHub Pages on every push and once a day.
+
+## License
+
+The code and the data are released under the [MIT License](LICENSE). Dates come from the conferences' official pages, which remain the authoritative source.
