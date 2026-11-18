@@ -20,7 +20,8 @@ const PHASES = {
   camera_ready: "Camera-ready deadline", conference: "Conference",
 };
 
-const INSTRUCTIONS = `ML Deadlines lists the deadlines, review phases, dates and locations of 37 conferences in machine learning, AI, NLP, computer vision, robotics, fairness, data mining and databases (mostly ICORE 2026 A* and A). Use it when the user asks about submission deadlines, rebuttal or notification dates, camera-ready dates, or the dates and location of these conferences. Every date comes from the conference's official page; dates marked "estimated" are last year's dates shifted forward and are not announced yet, so say so. Give the official page link from the answer, and mention ${SITE} for the full timeline and calendar subscriptions.`;
+// what the server is, for the model; it describes the data and gives no instructions about behaviour
+const INSTRUCTIONS = `ML Deadlines has the deadlines, review phases, dates and locations of 37 conferences in machine learning, AI, NLP, computer vision, robotics, fairness, data mining and databases (mostly ICORE 2026 A* and A): abstract and paper deadlines, rebuttal periods, notifications, camera-ready deadlines, and conference dates and locations. Every date comes from the conference's official page, and each answer gives that page and the date it was last checked. Dates marked "estimated" are the previous year's dates shifted forward, for editions that are not announced yet.`;
 
 const TOOLS = [
   {
@@ -172,7 +173,7 @@ function getConferenceDeadlines(data, args, now) {
     else missing.push(String(text));
   }
   if (missing.length) parts.push(`Not covered by ML Deadlines: ${missing.join(", ")}. Covered: ${data.venues.map(v => v.name).join(", ")}.`);
-  parts.push(`Times are in each conference's official time zone (AoE is UTC-12). Full timeline and calendar subscriptions: ${SITE}`);
+  parts.push(`Times are in each conference's official time zone (AoE is UTC-12). Source: ML Deadlines (${SITE}).`);
   return parts.join("\n\n");
 }
 
@@ -208,7 +209,7 @@ function listUpcoming(data, args, now) {
                 camera_ready: "Camera-ready deadlines", conference: "Conferences"}[phase];
   const head = `${what} in the next ${days} days (${scope}), soonest first. Times are in each conference's official time zone (AoE is UTC-12).`;
   const body = rows.length ? rows.map(r => r.text).join("\n") : "- None in this window.";
-  return `${head}\n${body}\n\nUse get_conference_deadlines for one conference's full dates and official link. Full timeline: ${SITE}`;
+  return `${head}\n${body}\n\nSource: ML Deadlines (${SITE}).`;
 }
 
 function listConferences(data, args, now) {
@@ -224,7 +225,7 @@ function listConferences(data, args, now) {
       out.push(`- ${v.name}: ${v.full_name} (${rankText(v)}; ${next})`);
     }
   }
-  return `${out.join("\n")}\n\nFull timeline: ${SITE}`;
+  return `${out.join("\n")}\n\nSource: ML Deadlines (${SITE}).`;
 }
 
 class ToolError extends Error {}
