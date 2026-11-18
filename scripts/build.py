@@ -51,6 +51,7 @@ def to_json(venues: list[dict], now: dt.datetime) -> dict:
             if "at" in e:
                 item["t"] = ms(e["at"])
                 item["when"] = f"{e['at']:%b} {e['at'].day}, {e['at']:%H:%M} {e['tz']}"
+                item["local"] = f"{e['at']:%Y-%m-%d %H:%M} {e['tz']}"  # with the year, for the Claude connector
             else:
                 item["start"], item["end"] = e["start"].isoformat(), e["end"].isoformat()
                 if e["type"] == "conference":

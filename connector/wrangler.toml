@@ -1,0 +1,9 @@
+# Cloudflare Worker for the ML Deadlines connector (see README.md in this folder).
+name = "ml-deadlines"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+# the connector keeps no logs of requests
+[observability]
+enabled = false

@@ -12,6 +12,10 @@ Submission deadlines, review phases, dates and locations of the main A*/A confer
 
 Every date comes from the official conference website, which each entry links to, together with the date it was last checked.
 
+## Use it in Claude
+
+The same data is available to Claude through a connector, so Claude can answer questions such as "When is the CVPR 2027 deadline?" with the official dates. Setup, tools and privacy are in [connector/README.md](connector/README.md).
+
 ## Venues
 
 | Area | Venues |
