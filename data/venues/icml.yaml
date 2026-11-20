@@ -22,9 +22,14 @@ editions:
   - year: 2027
     url: https://icml.cc/Conferences/2027
     cfp_url: https://icml.cc/Conferences/2027/CallForPapers
-    source: https://icml.cc/Conferences/2027
-    last_verified: 2026-11-06
+    source: https://icml.cc/Conferences/2027/CallForPapers
+    last_verified: 2026-11-20
     location: {city: Rio de Janeiro, country: Brazil}
     start: 2027-07-31
     end: 2027-08-06
-    notes: Call for papers not published yet.
+    notes: The call says ICML will announce updates to the submission process by late November 2026. Final decisions are also on https://icml.cc/Conferences/2027/Dates.
+    rounds:
+      - abstract: 2027-01-14
+        paper: 2027-01-22
+        notification: 2027-05-03
+        note: New two-stage review. Papers rejected in the first stage are notified by Feb 23, 2027.

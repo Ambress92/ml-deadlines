@@ -24,7 +24,7 @@ editions:
   - year: 2027
     url: https://conferences.miccai.org/2027/en/
     source: https://conferences.miccai.org/2027/en/
-    last_verified: 2026-11-06
+    last_verified: 2026-11-20
     location: {city: Auckland, country: New Zealand}
     start: 2027-09-27
     end: 2027-10-01
@@ -32,7 +32,7 @@ editions:
   - year: 2028
     url: https://conferences.miccai.org/2028/
     source: https://conferences.miccai.org/2028/
-    last_verified: 2026-11-06
+    last_verified: 2026-11-20
     location: {city: São Paulo, country: Brazil}
     start: 2028-10-16
     end: 2028-10-20
