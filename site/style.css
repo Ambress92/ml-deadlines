@@ -50,11 +50,24 @@ h1{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:-
 .pick::after{content:""; position:absolute; right:13px; top:50%; width:6px; height:6px; margin-top:-5px; border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted); transform:rotate(45deg); pointer-events:none}
 .pick.off select,.pick.off>button{opacity:.45}
 .pick>button{text-align:left; white-space:nowrap}
-.area-pop{position:absolute; top:calc(100% + 6px); left:0; z-index:40; background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.14); padding:6px; min-width:210px; display:flex; flex-direction:column}
+/* the conferences menu: one line per area, its box on the left and its conferences as on/off chips */
+.area-pop{position:absolute; top:calc(100% + 6px); left:0; z-index:40; background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.14); padding:6px; width:min(620px, calc(100vw - 24px)); max-height:min(76vh, 640px); overflow-y:auto; display:flex; flex-direction:column}
 .area-pop label{display:flex; gap:9px; align-items:center; font:500 13px var(--sans); color:var(--ink); padding:7px 10px; border-radius:5px; cursor:pointer; white-space:nowrap}
 .area-pop label:hover{background:var(--surface-2)}
 .area-pop label.all{font-weight:600; border-bottom:1px solid var(--line); border-radius:5px 5px 0 0; margin-bottom:4px; padding-bottom:9px}
 .area-pop input{accent-color:var(--accent); margin:0}
+.pk-grid{display:grid; grid-template-columns:max-content 1fr; gap:2px 6px; align-items:start}
+.pk-chips{display:flex; flex-wrap:wrap; gap:6px; padding:4px 4px 6px 0}
+.area-pop label.chip{padding:0; border-radius:999px}
+.area-pop label.chip:hover{background:none}
+.chip input{position:absolute; opacity:0; width:1px; height:1px; pointer-events:none}  /* the chip itself shows the state */
+.chip span{font:500 12px var(--mono); padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--surface)}
+.chip:hover span{border-color:var(--accent); color:var(--ink)}
+.chip input:checked+span{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
+.chip input:focus-visible+span{outline:2px solid var(--accent); outline-offset:2px}
+.pk-foot{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:4px 12px; border-top:1px solid var(--line); margin-top:4px; padding:6px 0 0 10px; font-size:12px; color:var(--faint)}
+.pk-foot button{font:600 12.5px var(--sans); color:var(--accent); background:none; border:0; padding:6px 10px; border-radius:5px; cursor:pointer; margin-left:auto}
+.pk-foot button:hover{background:var(--surface-2)}
 .search{position:relative; display:inline-flex; align-items:center}
 .search svg{position:absolute; left:10px; width:14px; height:14px; color:var(--faint); pointer-events:none}
 .search input{font:500 13px var(--sans); color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px 8px 31px; width:230px}
@@ -238,6 +251,9 @@ footer a:hover{color:var(--accent)}
   .search{order:1; flex:1 1 150px}
   .search input{width:100%}
   .pick,.check{order:2}
+  /* the conferences menu: each area's chips go below its name */
+  .pk-grid{grid-template-columns:1fr; gap:0}
+  .pk-chips{padding:0 4px 10px 32px}
   .tl{min-width:0; width:calc(100% * 12 / 9)}
   .swipe-hint{display:block; margin:-12px 0 0; font-size:12px; color:var(--muted)}
   .tl-head{grid-template-columns:1fr}

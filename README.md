@@ -6,6 +6,7 @@ Submission deadlines, review phases, dates and locations of the main A*/A confer
 
 - **Timeline view.** Every venue on one 12-month axis starting today: abstract and paper deadlines, review period, rebuttal, ARR commitment, notification, camera-ready and the conference itself.
 - **List view.** Live countdowns in your local time, with the official time (usually AoE) next to each one.
+- **Your conferences.** Pick whole areas or single conferences in the menu at the top. Your browser remembers the choice, and "Copy link to this choice" gives a link that opens the site with it, on another device or for a colleague.
 - **Calendar sync.** Subscribe to the venues you care about in Google Calendar, Apple Calendar or Outlook. Subscribed calendars update when dates change.
 - **Estimated dates.** When a venue has not announced its next edition yet, the site shows last year's dates shifted forward, clearly marked as estimated.
 - **Rolling deadlines.** Venues with frequent deadlines, VLDB (monthly) and SIGMOD (four rounds a year), appear in a separate strip, so they do not always sit at the top of the list.

@@ -12,6 +12,27 @@
                  camera_ready: "Camera-ready", conference: "Conference"};
   const SUBMISSION = new Set(["abstract", "paper"]);
   const DAY = 864e5;
+  const VENUE = new Map(DATA.venues.map(v => [v.id, v]));
+  // each area's conferences, alphabetical, as the menu lists them
+  const BY_AREA = new Map(AREA_KEYS.map(k => [k, DATA.venues.filter(v => v.area === k)
+    .sort((a, b) => a.name.localeCompare(b.name, "en", {sensitivity: "base"}))]));
+
+  // the conferences a choice shows. A choice is null for all of them, or {areas, venues}: the areas
+  // chosen whole (so conferences added to them later show up too) and single conferences from the others
+  function chosen(pick) {
+    if (pick === null) return new Set(VENUE.keys());
+    return new Set(DATA.venues.filter(v => pick.areas.includes(v.area) || pick.venues.includes(v.id)).map(v => v.id));
+  }
+  // and back: an area whose every conference is chosen counts as chosen whole, and all of them as null
+  function pickOf(ids) {
+    if (DATA.venues.every(v => ids.has(v.id))) return null;
+    const areas = AREA_KEYS.filter(k => BY_AREA.get(k).length && BY_AREA.get(k).every(v => ids.has(v.id)));
+    return {areas, venues: DATA.venues.filter(v => ids.has(v.id) && !areas.includes(v.area)).map(v => v.id)};
+  }
+  // a saved or linked choice, keeping only the areas and conferences that still exist
+  const cleanPick = (areas, venues) => pickOf(chosen({
+    areas: (Array.isArray(areas) ? areas : []).filter(k => AREA_KEYS.includes(k)),
+    venues: (Array.isArray(venues) ? venues : []).filter(id => VENUE.has(id))}));
 
   // the site is in English: US visitors get US dates (Jun 13, 1:59 PM), everyone else UK ones (13 Jun, 13:59)
   const LOCALE = /^en(-(US|CA|PH))?$/i.test(navigator.language || "") ? "en-US" : "en-GB";
@@ -23,13 +44,14 @@
   const narrowQuery = window.matchMedia("(max-width: 640px)");
 
   // the search text (q) is not remembered between visits; everything else is
-  // areas: the chosen areas, or null for all of them (so areas added later show up too)
-  let state = {view: "timeline", areas: null, showEst: true, sort: "submission", q: ""};
+  // pick: the chosen conferences, as chosen() reads it (null for all of them)
+  let state = {view: "timeline", pick: null, showEst: true, sort: "submission", q: ""};
   try {
     const saved = JSON.parse(localStorage.getItem("mld-state") || "{}");
     if (saved.view === "list" || saved.view === "timeline") state.view = saved.view;
-    if (Array.isArray(saved.areas)) state.areas = saved.areas.filter(k => AREA_KEYS.includes(k));
-    else if (AREA_KEYS.includes(saved.area)) state.areas = [saved.area];  // the one-area menu before the checkboxes
+    if (saved.pick && typeof saved.pick === "object") state.pick = cleanPick(saved.pick.areas, saved.pick.venues);
+    else if (Array.isArray(saved.areas)) state.pick = cleanPick(saved.areas, []);  // the areas menu before conferences could be picked
+    else if (AREA_KEYS.includes(saved.area)) state.pick = cleanPick([saved.area], []);  // the one-area menu before that
     if (typeof saved.showEst === "boolean") state.showEst = saved.showEst;
     if (saved.sort === "deadline") state.sort = "submission";  // the name before the sort menu existed
     else if (SORTS.includes(saved.sort)) state.sort = saved.sort;
@@ -37,6 +59,16 @@
   function save() {
     const {q, ...kept} = state;
     try { localStorage.setItem("mld-state", JSON.stringify(kept)); } catch (e) {}
+  }
+  // a shared link (…/#areas=nlp&conf=icml,neurips) opens with its choice, which this browser then keeps;
+  // the address loses the # part, so later changes do not leave a stale link in the address bar
+  let fromLink = false;
+  if (/(^#|&)(areas|conf)=/.test(location.hash)) {
+    const params = new URLSearchParams(location.hash.slice(1));
+    const list = k => (params.get(k) || "").toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
+    const pick = cleanPick(list("areas"), list("conf"));
+    if (pick === null || chosen(pick).size) { state.pick = pick; fromLink = true; save(); }
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
   }
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
@@ -112,9 +144,9 @@
   }
   const searching = () => words(state.q).length > 0;
   function shown(v) {
-    // a search covers every area: the remembered area filter would otherwise hide what was asked for
+    // a search covers every conference: the remembered choice would otherwise hide what was asked for
     if (searching()) return matches(v, state.q);
-    return state.areas === null || state.areas.includes(v.area);
+    return state.pick === null || state.pick.areas.includes(v.area) || state.pick.venues.includes(v.id);
   }
 
   // ---------------------------------------------------------------- model
@@ -367,41 +399,50 @@
   }
   const closeMenu = () => { document.getElementById("menu").hidden = true; };
 
-  function toast(text) {
+  function toast(text, ms = 2500) {
     const el = document.getElementById("toast");
     el.textContent = text; el.hidden = false;
-    clearTimeout(el._t); el._t = setTimeout(() => { el.hidden = true; }, 2500);
+    clearTimeout(el._t); el._t = setTimeout(() => { el.hidden = true; }, ms);
   }
 
   // ---------------------------------------------------------------- render
 
-  function areaLabel() {
-    if (state.areas === null) return "All areas";
-    const names = AREAS.filter(([k]) => state.areas.includes(k)).map(a => a[1]);
-    if (!names.length) return "No areas";
+  // the menu button names the choice: whole areas and single conferences, or how many there are
+  function pickLabel() {
+    const p = state.pick;
+    if (p === null) return "All conferences";
+    const n = chosen(p).size;
+    if (!n) return "No conferences";
+    const names = [...AREAS.filter(([k]) => p.areas.includes(k)).map(a => a[1]), ...p.venues.map(id => VENUE.get(id).name)];
     if (names.length === 1 || (names.length === 2 && names.join(", ").length <= 20)) return names.join(", ");
-    return `${names.length} areas`;
+    return p.venues.length ? `${n} conferences` : `${names.length} areas`;
   }
 
   function render() {
     const now = Date.now();
     document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
     document.getElementById("sort").value = state.sort;
-    document.getElementById("area-btn").textContent = areaLabel();
-    document.querySelectorAll("#area-pop [data-area]").forEach(i => { i.checked = state.areas === null || state.areas.includes(i.dataset.area); });
-    // "All areas" is ticked only when every area is; otherwise it is empty, and ticking it turns them all on
-    document.getElementById("area-all").checked = state.areas === null;
-    // the area menu is dimmed while a search runs, since the search covers all areas
+    document.getElementById("area-btn").textContent = pickLabel();
+    const ids = chosen(state.pick);
+    pickPop.querySelectorAll("[data-venue]").forEach(i => { i.checked = ids.has(i.dataset.venue); });
+    // an area's box is ticked when all its conferences are chosen, and half-filled when some are
+    pickPop.querySelectorAll("[data-area]").forEach(i => {
+      const on = BY_AREA.get(i.dataset.area).filter(v => ids.has(v.id)).length;
+      i.checked = on === BY_AREA.get(i.dataset.area).length; i.indeterminate = on > 0 && !i.checked;
+    });
+    // "All conferences" is ticked only when every conference is; otherwise it is empty, and ticking it turns them all on
+    document.getElementById("pick-all").checked = state.pick === null;
+    document.getElementById("pick-share").hidden = state.pick === null || !ids.size;
+    // the menu is dimmed while a search runs, since the search covers every conference
     document.getElementById("area-pick").classList.toggle("off", searching());
     document.getElementById("show-est").checked = state.showEst;
     renderRolling(now);
     const list = rows(now);
-    let empty = state.areas && !state.areas.length ? "No area chosen. Pick one or more in the areas menu." : "No venues in these areas.";
-    if (searching()) {
-      const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
-      empty = rolling.length ? `${esc(rolling.join(" and "))} ${rolling.length > 1 ? "are" : "is"} in the rolling submissions, below.`
-                             : `No conference matches “${esc(state.q.trim())}”.`;
-    }
+    // the list can be empty because nothing is chosen, nothing matches the search, or every venue found is a rolling one
+    const rolling = DATA.venues.filter(v => v.rolling && shown(v)).map(v => v.name);
+    const empty = rolling.length ? `${esc(rolling.join(" and "))} ${rolling.length > 1 ? "are" : "is"} in the rolling submissions, below.`
+      : searching() ? `No conference matches “${esc(state.q.trim())}”.`
+      : "Nothing chosen. Pick areas or conferences in the menu above.";
     document.getElementById("view").innerHTML = list.length
       ? (state.view === "timeline" ? renderTimeline(list, now) : renderList(list, now))
       : `<div class="list empty">${empty}</div>`;
@@ -461,21 +502,44 @@
     const vb = e.target.closest("[data-view]");
     if (vb) { state.view = vb.dataset.view; save(); render(); }
   });
-  // areas menu: one checkbox per area; "All areas" turns them all on, or all off when they all are on
-  const areaPop = document.getElementById("area-pop"), areaBtn = document.getElementById("area-btn");
-  areaPop.innerHTML = `<label class="all"><input type="checkbox" id="area-all"> All areas</label>`
-    + AREAS.map(([k, l]) => `<label><input type="checkbox" data-area="${k}"> ${esc(l)}</label>`).join("");
-  const setAreaPop = open => { areaPop.hidden = !open; areaBtn.setAttribute("aria-expanded", open); };
-  areaBtn.addEventListener("click", () => setAreaPop(areaPop.hidden));
-  areaPop.addEventListener("change", e => {
-    if (e.target.id === "area-all") state.areas = e.target.checked ? null : [];
-    else {
-      const on = [...areaPop.querySelectorAll("[data-area]")].filter(i => i.checked).map(i => i.dataset.area);
-      state.areas = on.length === AREA_KEYS.length ? null : on;
-    }
+  // the conferences menu: one line per area, with the area's box (all its conferences on or off)
+  // and its conferences as chips that switch one at a time; "All conferences" turns them all on, or all off
+  const pickPop = document.getElementById("area-pop"), pickBtn = document.getElementById("area-btn");
+  pickPop.innerHTML = `<label class="all"><input type="checkbox" id="pick-all"> All conferences</label><div class="pk-grid">`
+    + AREAS.filter(([k]) => BY_AREA.get(k).length).map(([k, l]) =>
+        `<label class="pk-area"><input type="checkbox" data-area="${k}"> ${esc(l)}</label><div class="pk-chips" role="group" aria-label="${esc(l)}">`
+        + BY_AREA.get(k).map(v => `<label class="chip" title="${esc(v.full_name)}"><input type="checkbox" data-venue="${esc(v.id)}"><span>${esc(v.name)}</span></label>`).join("")
+        + `</div>`).join("")
+    + `</div><div class="pk-foot"><span>Click a conference to show or hide it.</span><button type="button" id="pick-share">Copy link to this choice</button></div>`;
+  // the menu opens below its button, moved left when it would run off the right edge of the window
+  const setPickPop = open => {
+    pickPop.hidden = !open; pickBtn.setAttribute("aria-expanded", open);
+    if (!open) return;
+    pickPop.style.left = "0px";
+    const r = pickPop.getBoundingClientRect(), right = document.documentElement.clientWidth - 12;
+    if (r.right > right) pickPop.style.left = Math.max(12 - r.left, right - r.right) + "px";
+  };
+  pickBtn.addEventListener("click", () => setPickPop(pickPop.hidden));
+  addEventListener("resize", () => { if (!pickPop.hidden) setPickPop(true); });
+  pickPop.addEventListener("change", e => {
+    const t = e.target, ids = chosen(state.pick);
+    if (t.id === "pick-all") { if (t.checked) VENUE.forEach((v, id) => ids.add(id)); else ids.clear(); }
+    else if (t.dataset.area) BY_AREA.get(t.dataset.area).forEach(v => { if (t.checked) ids.add(v.id); else ids.delete(v.id); });
+    else if (t.dataset.venue) { if (t.checked) ids.add(t.dataset.venue); else ids.delete(t.dataset.venue); }
+    else return;
+    state.pick = pickOf(ids);
     save(); render();
   });
-  document.addEventListener("click", e => { if (!e.target.closest("#area-pick")) setAreaPop(false); });
+  // the link lists the whole areas and the single conferences, e.g. …/#areas=nlp&conf=icml,neurips
+  document.getElementById("pick-share").addEventListener("click", () => {
+    const p = state.pick;
+    const parts = [p.areas.length && "areas=" + p.areas.join(","), p.venues.length && "conf=" + p.venues.join(",")].filter(Boolean);
+    const link = location.origin + location.pathname + "#" + parts.join("&");
+    const failed = () => toast(link, 8000);
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => toast("Link copied. It opens the site with this choice of conferences."), failed);
+    else failed();
+  });
+  document.addEventListener("click", e => { if (!e.target.closest("#area-pick")) setPickPop(false); });
   document.getElementById("sort").addEventListener("change", e => { state.sort = e.target.value; save(); render(); });
   document.getElementById("show-est").addEventListener("change", e => { state.showEst = e.target.checked; save(); render(); });
   const qEl = document.getElementById("q");
@@ -484,7 +548,7 @@
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
       closeMenu();
-      if (!areaPop.hidden) { setAreaPop(false); areaBtn.focus(); }
+      if (!pickPop.hidden) { setPickPop(false); pickBtn.focus(); }
       if (document.activeElement === qEl && qEl.value) { qEl.value = ""; setQuery(""); }
     }
     // "/" jumps to the search box, unless the visitor is already typing somewhere
@@ -511,6 +575,7 @@
   document.addEventListener("focusout", () => { tipEl.hidden = true; });
 
   render();
+  if (fromLink) toast("Showing the conferences chosen in the link. Change them in the menu at the top.", 6000);
   narrowQuery.addEventListener("change", render);
   setInterval(tick, 30000);
   setInterval(render, 10 * 60000);
